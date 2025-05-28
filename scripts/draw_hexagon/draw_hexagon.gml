@@ -1,10 +1,10 @@
 // Script assets have changed for v2.3.0 see
 // https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
 function draw_hexagon(xx, yy, size, filled){
-	/// Draw a hexagon at given position
+	/// Draw a flat-topped hexagon at given position
 	var points = [];
 	for (var i = 0; i < 6; i++) {
-	    var angle = i * pi / 3;
+	    var angle = (i * pi / 3) + (pi / 6); // Rotate by 30 degrees to make flat-topped
 	    var px = xx + size * cos(angle);
 	    var py = yy + size * sin(angle);
 	    array_push(points, [px, py]);
