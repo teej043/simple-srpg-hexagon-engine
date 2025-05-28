@@ -4,27 +4,67 @@ function scr_ai_act_towards_target(unit, target){
 	/// AI unit acts towards target
 	/// @param {Id.Instance} unit - The AI unit
 	/// @param {Id.Instance} target - The target unit
-	// Check if target is in attack range
-	var neighbors = get_hex_neighbors(unit.grid_x, unit.grid_y);
+	
+	// First check if we can attack from current position
 	var can_attack = false;
-
-	for (var i = 0; i < array_length(neighbors); i++) {
-	    var nq = neighbors[i][0];
-	    var nr = neighbors[i][1];
-	    if (target.grid_x == nq && target.grid_y == nr) {
-	        can_attack = true;
-	        break;
-	    }
+	
+	with (obj_grid_manager) {
+		var directions = get_hex_directions(unit.grid_y);
+		for (var i = 0; i < array_length(directions); i++) {
+			var check_q = unit.grid_x + directions[i][0];
+			var check_r = unit.grid_y + directions[i][1];
+			
+			if (target.grid_x == check_q && target.grid_y == check_r) {
+				can_attack = true;
+				break;
+			}
+		}
 	}
 
+	// If we can attack and haven't acted yet, do it immediately
 	if (can_attack && !unit.has_acted) {
-	    // Attack the target
-	    execute_attack(unit, target);
-	} else if (!unit.has_moved) {
-	    // Move towards target
-	    scr_ai_move_towards(unit, target);
-	} else {
-	    // Wait
-	    scr_unit_wait(unit);
+		show_debug_message("AI: Attacking target from position (" + string(unit.grid_x) + "," + string(unit.grid_y) + ")");
+		execute_attack(unit, target);
+		
+		// If we can't move anymore, end the unit's turn
+		if (unit.has_moved) {
+			scr_unit_deselect(unit);
+		}
+		return;
+	}
+	
+	// If we can't attack but haven't moved, try to move closer
+	if (!unit.has_moved) {
+		show_debug_message("AI: Moving towards target");
+		scr_ai_move_towards(unit, target);
+		
+		// After moving, check if we can now attack
+		can_attack = false;
+		with (obj_grid_manager) {
+			var directions = get_hex_directions(unit.grid_y);
+			for (var i = 0; i < array_length(directions); i++) {
+				var check_q = unit.grid_x + directions[i][0];
+				var check_r = unit.grid_y + directions[i][1];
+				
+				if (target.grid_x == check_q && target.grid_y == check_r) {
+					can_attack = true;
+					break;
+				}
+			}
+		}
+		
+		// If we can now attack after moving, do it
+		if (can_attack && !unit.has_acted) {
+			show_debug_message("AI: Attacking target after moving");
+			execute_attack(unit, target);
+			scr_unit_deselect(unit);
+			return;
+		}
+	}
+	
+	// If we can't do anything else, wait
+	if (!unit.has_moved || !unit.has_acted) {
+		show_debug_message("AI: Waiting (no valid actions)");
+		scr_unit_wait(unit);
 	}
 }
