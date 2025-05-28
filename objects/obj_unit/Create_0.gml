@@ -20,15 +20,29 @@ gravity = 0;         // No gravity
 grid_x = -1;  // Invalid position initially
 grid_y = -1;
 
+// Movement animation variables
+movement_path = ds_list_create(); // List to store path coordinates
+current_path_position = 0;        // Current position in the path
+is_moving = false;               // Whether unit is currently moving
+move_progress = 0;              // Progress between current and next hex (0-1)
+move_speed = 0.1;              // How fast to move between hexes (adjust as needed)
+skip_animation = false;         // Flag to skip movement animation
+
+// Actual pixel position for smooth movement
+actual_x = 0;
+actual_y = 0;
+
 // Unit state
 team = 0; // 0 = player, 1 = enemy
 has_moved = false;
 has_acted = false;
 is_selected = false;
 
-// Visual
-sprite_index = spr_unit;
-image_speed = 0;
+// Visual settings
+sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);
+image_speed = 0;    // Disable sprite animation
+image_index = 0;    // Start with front-facing sprite
+image_xscale = 1;   // Start facing right
 
 // Action state
 current_action = "none"; // "none", "moving", "attacking", "waiting"

@@ -9,6 +9,9 @@ function scr_game_simple_ai(){
 	    for (var i = 0; i < array_length(enemy_units); i++) {
 	        var unit = enemy_units[i];
 	        if (!unit.has_acted) {
+	            // Select the unit before acting
+	            scr_unit_select(unit);
+	            
 	            // Simple AI: move towards nearest player unit or attack if possible
 	            var nearest_player = scr_ai_find_nearest_enemy(unit);
 	            if (nearest_player != noone) {

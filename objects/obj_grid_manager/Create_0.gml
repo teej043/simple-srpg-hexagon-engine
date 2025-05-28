@@ -3,8 +3,9 @@
 
 /// @description Initialize grid manager
 
+
 // Grid settings - these can be modified to change grid size
-hex_size = 32;  // Base size of hexagons
+hex_size = 45;  // Base size of hexagons
 grid_width = 20;  // Default width
 grid_height = 15; // Default height
 

@@ -9,6 +9,7 @@ This is a complete tactical turn-based strategy (TBS) game engine built for Game
 ### ⬡ Hexagonal Grid System
 
 - **15x12 hexagonal grid** with proper coordinate conversion
+- **Flat-top hexagon orientation** for a more traditional tactical RPG look
 - **Axial coordinate system** for consistent neighbor calculations
 - **Visual grid highlighting** for movement (blue), attacks (red), and selection (green)
 - **Flood-fill pathfinding** for accurate movement range calculation
@@ -19,6 +20,7 @@ This is a complete tactical turn-based strategy (TBS) game engine built for Game
 - **Flexible action system** - units can move and attack in any order
 - **Individual unit management** with persistent action states
 - **Win/lose conditions** with proper game over handling
+- **Improved action logic** with better state management and validation
 
 ### 👥 Unit Management
 
@@ -26,6 +28,8 @@ This is a complete tactical turn-based strategy (TBS) game engine built for Game
 - **Core unit attributes**: Health Points, Skill Points, Attack, Defense, Movement Range
 - **Action tracking**: Move, Attack, Wait actions with independent execution
 - **Team-based combat** with visual team indicators
+- **Smooth movement animation** with proper interpolation between grid positions
+- **Directional idle sprites** that face the unit's last movement direction
 
 ### 🧠 AI System
 
@@ -172,6 +176,13 @@ Each unit can perform **two independent actions per turn**:
 - **ESC Key**: Quit game (when game over)
 
 ## Technical Implementation Details
+
+### Animation System
+
+- **Smooth unit movement** using lerp-based interpolation
+- **Direction-aware sprites** that update based on movement
+- **8-directional facing** for idle unit states
+- **Clean animation state management** preventing movement conflicts
 
 ### Coordinate System
 
