@@ -1,8 +1,16 @@
 /// @description Insert description here
 // You can write your code in this editor
 
-// Check for end turn
-if (keyboard_check_pressed(vk_space)) {
+// Check for end turn (only during player's turn and no unit is moving)
+var any_unit_moving = false;
+with (obj_unit) {
+    if (is_moving) {
+        any_unit_moving = true;
+        break;
+    }
+}
+
+if (keyboard_check_pressed(vk_space) && current_team == 0 && !any_unit_moving) {
     scr_game_end_turn();
 }
 

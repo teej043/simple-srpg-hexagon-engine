@@ -4,37 +4,40 @@
 with (obj_game_manager) {
     show_debug_message("Initializing game...");
     
+    // Calculate middle position horizontally (grid is 20 tiles wide)
+    var start_x = floor((obj_grid_manager.grid_width - 5) / 2);  // Subtract 5 to center the group of 5 units
+    
+    // Define unit types for each team
+    var player_unit_types = ["berserker", "mage", "darkknight", "grappler", "archer"];
+    var enemy_unit_types = ["archer", "mage", "berserker", "darkknight", "grappler"];
+    
     // Create player units
     for (var i = 0; i < 5; i++) {
-        var unit = instance_create_layer(0, 0, "Units", obj_unit);
-        unit.team = 0;
+        var unit_type = player_unit_types[i];
+        var unit = create_unit_from_template(unit_type, start_x + i, 0, 0);
         
-        show_debug_message("Placing player unit " + string(i) + " at grid (" + string(i) + ",0)");
-        var success = place_unit_on_grid(unit, i, 0);
-        if (success) {
+        if (unit != noone) {
             array_push(player_units, unit);
-            show_debug_message("Player unit placed successfully at pixel (" + string(unit.x) + "," + string(unit.y) + ")");
+            show_debug_message("Player " + unit_type + " placed successfully at grid (" + 
+                             string(start_x + i) + ",0)");
         } else {
-            show_debug_message("Failed to place player unit!");
-            instance_destroy(unit);
+            show_debug_message("Failed to create player " + unit_type + "!");
         }
     }
 
     // Create enemy units  
+    var enemy_row = obj_grid_manager.grid_height - 1;
     for (var i = 0; i < 5; i++) {
-        var unit = instance_create_layer(0, 0, "Units", obj_unit);
-        unit.team = 1;
-        unit.image_blend = c_red;
+        var unit_type = enemy_unit_types[i];
+        var unit = create_unit_from_template(unit_type, start_x + i, enemy_row, 1);
         
-        var enemy_row = obj_grid_manager.grid_height - 1;
-        show_debug_message("Placing enemy unit " + string(i) + " at grid (" + string(i) + "," + string(enemy_row) + ")");
-        var success = place_unit_on_grid(unit, i, enemy_row);
-        if (success) {
+        if (unit != noone) {
+            unit.image_blend = c_red;  // Make enemy units red
             array_push(enemy_units, unit);
-            show_debug_message("Enemy unit placed successfully at pixel (" + string(unit.x) + "," + string(unit.y) + ")");
+            show_debug_message("Enemy " + unit_type + " placed successfully at grid (" + 
+                             string(start_x + i) + "," + string(enemy_row) + ")");
         } else {
-            show_debug_message("Failed to place enemy unit!");
-            instance_destroy(unit);
+            show_debug_message("Failed to create enemy " + unit_type + "!");
         }
     }
     
