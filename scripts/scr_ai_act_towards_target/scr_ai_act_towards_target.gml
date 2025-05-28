@@ -25,6 +25,11 @@ function scr_ai_act_towards_target(unit, target){
 	if (can_attack && !unit.has_acted) {
 		show_debug_message("AI: Attacking target from position (" + string(unit.grid_x) + "," + string(unit.grid_y) + ")");
 		execute_attack(unit, target);
+		
+		// If we can't move anymore, end the unit's turn
+		if (unit.has_moved) {
+			scr_unit_deselect(unit);
+		}
 		return;
 	}
 	
@@ -52,6 +57,7 @@ function scr_ai_act_towards_target(unit, target){
 		if (can_attack && !unit.has_acted) {
 			show_debug_message("AI: Attacking target after moving");
 			execute_attack(unit, target);
+			scr_unit_deselect(unit);
 			return;
 		}
 	}

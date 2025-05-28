@@ -27,7 +27,7 @@ has_acted = false;
 is_selected = false;
 
 // Visual
-sprite_index = spr_unit;
+sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);
 image_speed = 0;
 
 // Action state
