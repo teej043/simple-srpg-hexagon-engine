@@ -7,8 +7,8 @@ function get_hex_neighbors(q, r){
 	/// @return {Array} - Array of [q, r] neighbor coordinates
 	with (obj_grid_manager) {
 	    var neighbors = [];
-	    // Using consistent axial coordinate directions
-	    var directions = hex_directions;
+	    // Get the correct hex directions based on the row
+	    var directions = get_hex_directions(r);
 
 	    for (var i = 0; i < array_length(directions); i++) {
 	        var nq = q + directions[i][0];

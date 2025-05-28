@@ -16,16 +16,22 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	// Check for attack (can happen before OR after movement)
 	if (target_unit != noone && target_unit.team != unit.team && !unit.has_acted) {
 	    // Check if target is in attack range from current position
-	    var neighbors = get_hex_neighbors(unit.grid_x, unit.grid_y);
 	    var can_attack = false;
-    
-	    for (var i = 0; i < array_length(neighbors); i++) {
-	        if (neighbors[i][0] == target_q && neighbors[i][1] == target_r) {
-	            can_attack = true;
-	            break;
+	    
+	    // Get all six adjacent hexes
+	    with (obj_grid_manager) {
+	        var directions = get_hex_directions(unit.grid_y);
+	        for (var i = 0; i < array_length(directions); i++) {
+	            var check_q = unit.grid_x + directions[i][0];
+	            var check_r = unit.grid_y + directions[i][1];
+	            
+	            if (check_q == target_q && check_r == target_r) {
+	                can_attack = true;
+	                break;
+	            }
 	        }
 	    }
-    
+	    
 	    if (can_attack) {
 	        execute_attack(unit, target_unit);
 	        unit.has_acted = true;
