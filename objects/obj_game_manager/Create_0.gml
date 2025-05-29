@@ -1,28 +1,36 @@
 /// @description Insert description here
 // You can write your code in this editor
 
-// Turn management
-current_team = 0;
+// Initialize game state
+current_team = 0; // 0 = player, 1 = enemy
 turn_number = 1;
 game_state = "playing"; // "playing", "game_over"
 
-// Selected unit reference
-selected_unit = noone;
-
-// Unit lists
+// Initialize unit lists
 player_units = [];
 enemy_units = [];
 
+// Initialize selected unit
+selected_unit = noone;
+
+// Initialize cursor state
+cursor_active = false;
+cursor_q = 0;
+cursor_r = 0;
+cursor_move_timer = 0;
+cursor_move_delay = 10;
+
+// Initialize tab selection
+can_tab_select = true;
+tab_selection_index = 0;
+
+// Initialize AI variables
+ai_pending_unit = noone;
+ai_pending_target = noone;
+
+// Initialize game over state
+game_over = false;
+winner = -1; // -1 = no winner, 0 = player, 1 = enemy
+
 // Initialize units
 scr_game_initialize();
-
-// Tab selection variables
-tab_selection_index = 0;  // Current index in the player units array when using tab
-can_tab_select = true;    // Flag to control tab selection timing
-
-// Keyboard cursor variables
-cursor_q = 0;  // Cursor position in hex grid (q coordinate)
-cursor_r = 0;  // Cursor position in hex grid (r coordinate)
-cursor_active = false;  // Whether the keyboard cursor is currently active
-cursor_move_delay = 10;  // Delay between cursor movements (in steps)
-cursor_move_timer = 0;   // Timer for cursor movement

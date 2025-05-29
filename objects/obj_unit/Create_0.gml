@@ -1,6 +1,9 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+// Unit type and basic info
+unit_type = "none"; // Will be set by unit factory
+
 // Unit stats
 max_hp = 100;
 current_hp = max_hp;

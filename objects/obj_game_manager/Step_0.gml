@@ -150,10 +150,7 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
         
         // If there's a selected unit, show its ranges
         if (selected_unit != noone) {
-            show_debug_message("Updating ranges for selected unit at: " + string(selected_unit.grid_x) + "," + string(selected_unit.grid_y));
-            
             if (!selected_unit.has_moved) {
-                show_debug_message("Showing movement range");
                 calculate_movement_range(selected_unit);
             } else if (!selected_unit.has_acted) {
                 show_debug_message("Showing attack range");
@@ -173,19 +170,8 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 // Check if there's an enemy unit at the cursor position
                 var unit_at_cursor = get_unit_at(cursor_q, cursor_r);
                 if (unit_at_cursor != noone && unit_at_cursor.team != selected_unit.team && !selected_unit.has_acted) {
-                    // Check if the enemy is adjacent
-                    var can_attack = false;
-                    var directions = obj_grid_manager.get_hex_directions(selected_unit.grid_y);
-                    
-                    for (var i = 0; i < array_length(directions); i++) {
-                        var attack_q = selected_unit.grid_x + directions[i][0];
-                        var attack_r = selected_unit.grid_y + directions[i][1];
-                        
-                        if (cursor_q == attack_q && cursor_r == attack_r) {
-                            can_attack = true;
-                            break;
-                        }
-                    }
+                    // Use the same flood fill algorithm as attack range visualization
+                    var can_attack = is_target_in_attack_range(selected_unit, cursor_q, cursor_r);
                     
                     if (can_attack) {
                         show_debug_message("Valid attack target found, performing attack");

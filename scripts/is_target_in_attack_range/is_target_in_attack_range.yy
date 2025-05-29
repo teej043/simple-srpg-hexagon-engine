@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"is_target_in_attack_range",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"is_target_in_attack_range",
+  "parent":{
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
