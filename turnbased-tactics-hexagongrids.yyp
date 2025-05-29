@@ -70,6 +70,7 @@
     {"id":{"name":"place_unit_on_grid","path":"scripts/place_unit_on_grid/place_unit_on_grid.yy",},},
     {"id":{"name":"remove_unit_from_grid","path":"scripts/remove_unit_from_grid/remove_unit_from_grid.yy",},},
     {"id":{"name":"scr_ability_data","path":"scripts/scr_ability_data/scr_ability_data.yy",},},
+    {"id":{"name":"scr_action_manager","path":"scripts/scr_action_manager/scr_action_manager.yy",},},
     {"id":{"name":"scr_ai_act_towards_target","path":"scripts/scr_ai_act_towards_target/scr_ai_act_towards_target.yy",},},
     {"id":{"name":"scr_ai_find_nearest_enemy","path":"scripts/scr_ai_find_nearest_enemy/scr_ai_find_nearest_enemy.yy",},},
     {"id":{"name":"scr_ai_move_towards","path":"scripts/scr_ai_move_towards/scr_ai_move_towards.yy",},},

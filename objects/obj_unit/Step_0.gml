@@ -44,12 +44,8 @@ if (is_moving) {
         current_path_position = 0;
         skip_animation = false;
         
-        // Show attack range if unit hasn't acted yet
-        if (!has_acted) {
-            scr_clear_highlights();
-            calculate_attack_range(id);
-            obj_grid_manager.highlight_grid[grid_x][grid_y] = 3; // Keep unit highlighted
-        }
+        // Notify action system that movement is complete
+        complete_current_action();
     }
     else {
         // Log the entire movement path at the start of movement
@@ -160,20 +156,16 @@ if (is_moving) {
                     current_path_position = 0;
                     skip_animation = false;
                     
-                    // Show attack range if unit hasn't acted yet
-                    if (!has_acted) {
-                        scr_clear_highlights();
-                        calculate_attack_range(id);
-                        obj_grid_manager.highlight_grid[grid_x][grid_y] = 3; // Keep unit highlighted
-                    }
+                    // Notify action system that movement is complete
+                    complete_current_action();
                 }
             }
         }
     }
 }
 
-// Handle unit selection and actions
-if (mouse_check_button_pressed(mb_left)) {
+// Handle unit selection and actions (only when game can accept input)
+if (mouse_check_button_pressed(mb_left) && can_accept_input()) {
     var mouse_hex = pixel_to_hex(mouse_x, mouse_y);
     var mouse_q = mouse_hex[0];
     var mouse_r = mouse_hex[1];
@@ -186,16 +178,19 @@ if (mouse_check_button_pressed(mb_left)) {
     }
     // Check if this unit is selected and clicking elsewhere
     else if (is_selected) {
-        scr_unit_handle_action(id, mouse_q, mouse_r);
+        // Use new action system instead of old scr_unit_handle_action
+        process_unit_action_input(id, mouse_q, mouse_r);
     }
 }
 
-// Right-click to wait/end turn for selected unit
-if (mouse_check_button_pressed(mb_right) && is_selected) {
-    scr_unit_wait(id);
+// Right-click to wait/end turn for selected unit (only when game can accept input)
+if (mouse_check_button_pressed(mb_right) && is_selected && can_accept_input()) {
+    var wait_action = create_wait_action(id);
+    queue_action(wait_action);
+    process_next_action();
 }
 
-// Space to skip animation
+// Space to skip animation (this should work during animations)
 if (keyboard_check_pressed(vk_space) && is_moving) {
     skip_animation = true;
 }

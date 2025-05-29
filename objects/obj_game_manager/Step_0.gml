@@ -1,21 +1,23 @@
 /// @description Insert description here
 // You can write your code in this editor
 
-// Check for end turn (only during player's turn and no unit is moving)
-var any_unit_moving = false;
-with (obj_unit) {
-    if (is_moving) {
-        any_unit_moving = true;
-        break;
+// Process action queue
+if (game_state == GameState.PROCESSING_ACTION && !action_in_progress) {
+    process_next_action();
+}
+
+// Check for end turn (only during player's turn and when can accept input)
+if (keyboard_check_pressed(vk_space) && can_accept_input()) {
+    // Check if space is being used to skip animation
+    if (action_in_progress) {
+        skip_current_animation();
+    } else {
+        scr_game_end_turn();
     }
 }
 
-if (keyboard_check_pressed(vk_space) && current_team == 0 && !any_unit_moving) {
-    scr_game_end_turn();
-}
-
-// Handle tab selection for player units
-if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and when no unit is moving
+// Handle tab selection for player units (only when can accept input)
+if (can_accept_input()) {
     if (keyboard_check_pressed(vk_tab) && can_tab_select) {
         var active_units = [];
         
@@ -48,8 +50,8 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 show_debug_message("Tab selected new unit and moved cursor to: " + string(cursor_q) + "," + string(cursor_r));
             }
             
-            // Clear any existing highlights
-            scr_clear_highlights();
+            // Clear any existing highlights and targeting
+            cancel_targeting();
             
             // Show movement range for newly selected unit
             if (!selected_unit.has_moved) {
@@ -70,8 +72,8 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
     }
 }
 
-// Handle keyboard cursor
-if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and when no unit is moving
+// Handle keyboard cursor (only when can accept input)
+if (can_accept_input()) {
     // Check for any arrow key press to activate cursor
     if (!cursor_active && (
         keyboard_check_pressed(vk_left) || 
@@ -159,7 +161,7 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
             obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
         }
         
-        // Handle enter key for selection/action (like left mouse button)
+        // Handle enter key for selection/action (using new action system)
         if (keyboard_check_pressed(vk_enter)) {
             show_debug_message("Enter key pressed at cursor position: " + string(cursor_q) + "," + string(cursor_r));
             
@@ -167,27 +169,9 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
             if (selected_unit != noone) {
                 show_debug_message("Checking action with selected unit at: " + string(selected_unit.grid_x) + "," + string(selected_unit.grid_y));
                 
-                // Check if there's an enemy unit at the cursor position
-                var unit_at_cursor = get_unit_at(cursor_q, cursor_r);
-                if (unit_at_cursor != noone && unit_at_cursor.team != selected_unit.team && !selected_unit.has_acted) {
-                    // Use the same flood fill algorithm as attack range visualization
-                    var can_attack = is_target_in_attack_range(selected_unit, cursor_q, cursor_r);
-                    
-                    if (can_attack) {
-                        show_debug_message("Valid attack target found, performing attack");
-                        scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
-                        exit;
-                    }
-                }
-                
-                // If no attack was possible, check for movement
-                var highlight_value = obj_grid_manager.highlight_grid[cursor_q][cursor_r];
-                show_debug_message("Checking for movement. Highlight value at cursor: " + string(highlight_value));
-                
-                if (highlight_value == 1) { // Movement tile
-                    show_debug_message("Valid movement tile found, performing move");
-                    scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
-                    exit;
+                // Use new action system to process the input
+                if (process_unit_action_input(selected_unit, cursor_q, cursor_r)) {
+                    exit; // Action was processed
                 }
             }
             
@@ -217,22 +201,26 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                     scr_unit_select(unit_at_cursor);
                 }
             } else {
-                // If a unit is selected, try to perform an action
-                scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
+                // If a unit is selected, try to perform an action (using new system)
+                process_unit_action_input(selected_unit, cursor_q, cursor_r);
             }
         }
         
-        // Handle escape key to deactivate cursor
+        // Handle escape key to deactivate cursor or cancel targeting
         if (keyboard_check_pressed(vk_escape)) {
-            cursor_active = false;
-            scr_clear_highlights();
-            if (selected_unit != noone) {
-                if (!selected_unit.has_moved) {
-                    calculate_movement_range(selected_unit);
-                } else if (!selected_unit.has_acted) {
-                    calculate_attack_range(selected_unit);
+            if (targeting_mode != TargetingMode.NONE) {
+                cancel_targeting();
+            } else {
+                cursor_active = false;
+                scr_clear_highlights();
+                if (selected_unit != noone) {
+                    if (!selected_unit.has_moved) {
+                        calculate_movement_range(selected_unit);
+                    } else if (!selected_unit.has_acted) {
+                        calculate_attack_range(selected_unit);
+                    }
+                    obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
                 }
-                obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
             }
         }
         
@@ -254,4 +242,5 @@ if (win_state != "playing") {
     }
     selected_unit = noone;
     scr_clear_highlights();
+    game_state = GameState.GAME_OVER;
 }

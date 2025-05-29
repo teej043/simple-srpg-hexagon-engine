@@ -36,17 +36,18 @@ function calculate_attack_range(unit){
 			var r = current[1];
 			var dist = current[2];
 			
-			// Mark attackable positions (excluding unit's own position)
-			if (dist > 0) {
-				// Only highlight positions with enemy units
-				var target = get_unit_at(q, r);
-				if (target != noone && target.team != unit.team) {
-					highlight_grid[q][r] = 2; // Red highlight for attack
-				}
-			}
-			
 			// Continue flood fill within attack range
-			if (dist < unit.attack_range) {
+			if (dist <= unit.attack_range) {
+				// Mark attackable positions (excluding unit's own position)
+				if (dist > 0) {
+					// Only highlight positions with enemy units
+					var target = get_unit_at(q, r);
+					if (target != noone && target.team != unit.team) {
+						highlight_grid[q][r] = 2; // Red highlight for attack
+					}
+				}
+				
+				// Add neighbors to queue
 				var neighbors = get_hex_neighbors(q, r);
 				for (var i = 0; i < array_length(neighbors); i++) {
 					var nq = neighbors[i][0];

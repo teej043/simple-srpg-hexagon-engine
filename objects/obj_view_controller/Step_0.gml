@@ -125,9 +125,13 @@ if (!is_panning && instance_exists(obj_game_manager)) {
     }
     
     // First priority: Follow selected unit if one exists
+    // BUT only if the unit still has actions available or is currently moving
     if (gm.selected_unit != noone && instance_exists(gm.selected_unit)) {
-        if (follow_target != gm.selected_unit) {
-            set_camera_target(gm.selected_unit);
+        var unit = gm.selected_unit;
+        var unit_has_actions = !unit.has_moved || !unit.has_acted || unit.is_moving;
+        
+        if (unit_has_actions && follow_target != unit) {
+            set_camera_target(unit);
         }
     }
     // Second priority: During enemy turn, find active enemy unit
