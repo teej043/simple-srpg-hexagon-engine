@@ -11,7 +11,8 @@ function get_unit_templates() {
                 "max_sp": 40,
                 "attack_power": 25,
                 "defense": 8,
-                "movement_range": 3
+                "movement_range": 3,
+				"attack_range": 1
             },
             "ability_ids": ["rage", "whirlwind"],
             "passive_trait_ids": ["berserk", "momentum"]
@@ -24,7 +25,8 @@ function get_unit_templates() {
                 "max_sp": 80,
                 "attack_power": 30,
                 "defense": 5,
-                "movement_range": 2
+                "movement_range": 2,
+				"attack_range": 2
             },
             "ability_ids": ["fireball"],
             "passive_trait_ids": ["mana_shield", "spell_weaver"]
@@ -37,7 +39,8 @@ function get_unit_templates() {
                 "max_sp": 60,
                 "attack_power": 22,
                 "defense": 12,
-                "movement_range": 3
+                "movement_range": 3,
+				"attack_range": 1
             },
             "ability_ids": ["dark_slash"],
             "passive_trait_ids": ["battle_hardened"]
@@ -50,7 +53,8 @@ function get_unit_templates() {
                 "max_sp": 45,
                 "attack_power": 20,
                 "defense": 10,
-                "movement_range": 4
+                "movement_range": 4,
+				"attack_range": 1
             },
             "ability_ids": ["throw"],
             "passive_trait_ids": ["momentum", "battle_hardened"]
@@ -63,7 +67,8 @@ function get_unit_templates() {
                 "max_sp": 50,
                 "attack_power": 18,
                 "defense": 7,
-                "movement_range": 3
+                "movement_range": 3,
+				"attack_range": 3
             },
             "ability_ids": ["power_shot"],
             "passive_trait_ids": ["long_range"]

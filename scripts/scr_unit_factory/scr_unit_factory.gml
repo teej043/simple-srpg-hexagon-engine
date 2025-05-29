@@ -16,6 +16,9 @@ function create_unit_from_template(unit_type, grid_x, grid_y, team) {
     
     // Apply template data
     with (unit) {
+        // Set unit type
+        self.unit_type = unit_type;
+        
         // Set position
         self.grid_x = grid_x;
         self.grid_y = grid_y;
@@ -40,6 +43,7 @@ function create_unit_from_template(unit_type, grid_x, grid_y, team) {
         attack_power = stats.attack_power;
         defense = stats.defense;
         movement_range = stats.movement_range;
+        attack_range = stats.attack_range;
         
         // Initialize other properties
         has_moved = false;
@@ -75,7 +79,8 @@ function export_unit_data_to_json(unit) {
             current_sp: unit.current_sp,
             attack_power: unit.attack_power,
             defense: unit.defense,
-            movement_range: unit.movement_range
+            movement_range: unit.movement_range,
+            attack_range: unit.attack_range
         },
         state: {
             team: unit.team,
@@ -114,6 +119,7 @@ function import_unit_data_from_json(unit, json_string) {
         unit.attack_power = data.stats.attack_power;
         unit.defense = data.stats.defense;
         unit.movement_range = data.stats.movement_range;
+        unit.attack_range = data.stats.attack_range;
         
         // Update state
         unit.team = data.state.team;
