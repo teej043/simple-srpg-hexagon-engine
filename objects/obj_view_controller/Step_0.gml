@@ -148,8 +148,9 @@ if (follow_target != noone && instance_exists(follow_target)) {
     target_x = clamp(follow_target.x - cam_width/2, cam_bounds_x_min, cam_bounds_x_max);
     target_y = clamp(follow_target.y - cam_height/2, cam_bounds_y_min, cam_bounds_y_max);
     
-    // Stop following if the target has finished its actions
-    if (follow_target.has_moved && follow_target.has_acted) {
+    // Only stop following if the unit has completed ALL actions AND is not moving
+    if (follow_target.has_moved && follow_target.has_acted && !follow_target.is_moving) {
+        show_debug_message("[CAMERA] Stopped following " + follow_target.unit_type + " - actions completed");
         follow_target = noone;
     }
 }
@@ -160,11 +161,3 @@ var new_y = lerp(current_y, target_y, lerp_speed);
 
 // Update camera position
 camera_set_view_pos(view_camera[0], new_x, new_y);
-
-// Debug camera position periodically
-if (current_time mod 60 == 0) {
-    show_debug_message("Camera pos: " + string(new_x) + "," + string(new_y));
-    if (follow_target != noone) {
-        show_debug_message("Following target: " + string(follow_target));
-    }
-} 

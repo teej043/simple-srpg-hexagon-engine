@@ -98,8 +98,11 @@ if (selected_unit != noone) {
 
 // Instructions
 draw_set_color(c_yellow);
-draw_text(10, room_height - 80, "Controls:");
-draw_text(10, room_height - 60, "Left-click: Select/Move/Attack");
-draw_text(10, room_height - 40, "Right-click: Wait (end unit turn)");
-draw_text(10, room_height - 20, "Blue=Move, Red=Attack, Green=Selected");
+draw_text(10, room_height - 120, "Controls:");
+draw_text(10, room_height - 100, "Left-click: Select/Move/Attack");
+draw_text(10, room_height - 80, "Right-click: Wait (end unit turn)");
+draw_text(10, room_height - 60, "Tab: Cycle through available units");
+draw_text(10, room_height - 40, "Arrow Keys: Move cursor");
+draw_text(10, room_height - 20, "Enter/Space: Select/Act with cursor");
+draw_text(200, room_height - 20, "Esc: Exit cursor mode");
 draw_set_color(c_white);

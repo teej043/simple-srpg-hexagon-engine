@@ -14,6 +14,7 @@ for (var q = 0; q < grid_width; q++) {
             case 1: draw_set_color(c_blue); break;      // Movement
             case 2: draw_set_color(c_red); break;       // Attack
             case 3: draw_set_color(c_green); break;     // Selected
+            case 4: draw_set_color(c_yellow); break;    // Keyboard cursor
         }
         
         draw_set_alpha(0.3);

@@ -38,10 +38,18 @@ if (is_moving) {
         // Place unit back on grid at final position
         place_unit_on_grid(id, grid_x, grid_y);
         
+        // Clear movement path and reset animation variables
         ds_list_clear(movement_path);
         move_progress = 0;
         current_path_position = 0;
         skip_animation = false;
+        
+        // Show attack range if unit hasn't acted yet
+        if (!has_acted) {
+            scr_clear_highlights();
+            calculate_attack_range(id);
+            obj_grid_manager.highlight_grid[grid_x][grid_y] = 3; // Keep unit highlighted
+        }
     }
     else {
         // Log the entire movement path at the start of movement
@@ -151,6 +159,13 @@ if (is_moving) {
                     move_progress = 0;
                     current_path_position = 0;
                     skip_animation = false;
+                    
+                    // Show attack range if unit hasn't acted yet
+                    if (!has_acted) {
+                        scr_clear_highlights();
+                        calculate_attack_range(id);
+                        obj_grid_manager.highlight_grid[grid_x][grid_y] = 3; // Keep unit highlighted
+                    }
                 }
             }
         }

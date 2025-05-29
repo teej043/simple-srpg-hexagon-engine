@@ -20,6 +20,7 @@ function scr_unit_select(unit){
 	}
 
 	// Show attack range if unit hasn't acted (can attack from current position)
+	// Always show attack range when first selecting a unit, even if they haven't moved yet
 	if (!unit.has_acted) {
 	    calculate_attack_range(unit);
 	}

@@ -4,11 +4,13 @@ function calculate_movement_range(unit){
 	/// Calculate valid movement positions for a unit
 	/// @param {Id.Instance} unit - The unit to calculate movement for
 	with (obj_grid_manager) {
-    // Clear movement grid
+    // Clear movement grid and only movement highlights (value 1), preserve attack highlights (value 2)
     for (var i = 0; i < grid_width; i++) {
         for (var j = 0; j < grid_height; j++) {
             movement_grid[i][j] = -1;
-            highlight_grid[i][j] = 0;
+            if (highlight_grid[i][j] == 1) {
+                highlight_grid[i][j] = 0;
+            }
         }
     }
 
@@ -32,7 +34,10 @@ function calculate_movement_range(unit){
                 if (is_valid_position(nq, nr) && movement_grid[nq][nr] == -1) {
                     if (get_unit_at(nq, nr) == noone) {
                         movement_grid[nq][nr] = dist + 1;
-                        highlight_grid[nq][nr] = 1; // Blue highlight for movement
+                        // Only set movement highlight if there's no attack highlight
+                        if (highlight_grid[nq][nr] != 2) {
+                            highlight_grid[nq][nr] = 1; // Blue highlight for movement
+                        }
                         ds_queue_enqueue(queue, [nq, nr, dist + 1]);
                     }
                 }
