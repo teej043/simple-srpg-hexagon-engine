@@ -3,6 +3,11 @@
 function calculate_attack_range(unit){
 	/// Calculate valid attack positions for a unit using flood fill
 	/// @param {Id.Instance} unit - The unit to calculate attack range for
+	
+	show_debug_message("[ATTACK_RANGE] Calculating attack range for " + unit.unit_type + " at [" + string(unit.grid_x) + "," + string(unit.grid_y) + "] with range " + string(unit.attack_range));
+	
+	var targets_found = 0;
+	
 	with (obj_grid_manager) {
 		// Preserve unit position highlight
 		var unit_pos_highlight = highlight_grid[unit.grid_x][unit.grid_y];
@@ -44,6 +49,8 @@ function calculate_attack_range(unit){
 					var target = get_unit_at(q, r);
 					if (target != noone && target.team != unit.team) {
 						highlight_grid[q][r] = 2; // Red highlight for attack
+						targets_found++;
+						show_debug_message("[ATTACK_RANGE] Found enemy target: " + target.unit_type + " at [" + string(q) + "," + string(r) + "] distance " + string(dist));
 					}
 				}
 				
@@ -64,5 +71,7 @@ function calculate_attack_range(unit){
 		// Cleanup
 		ds_queue_destroy(queue);
 	}
+	
+	show_debug_message("[ATTACK_RANGE] Attack range calculation complete. Found " + string(targets_found) + " enemy targets within range.");
 }
 

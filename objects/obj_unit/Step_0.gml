@@ -165,29 +165,38 @@ if (is_moving) {
 }
 
 // Handle unit selection and actions (only when game can accept input)
-if (mouse_check_button_pressed(mb_left) && can_accept_input()) {
-    var mouse_hex = pixel_to_hex(mouse_x, mouse_y);
-    var mouse_q = mouse_hex[0];
-    var mouse_r = mouse_hex[1];
-    
-    // Check if clicking on this unit
-    if (mouse_q == grid_x && mouse_r == grid_y && !has_acted) {
-        if (obj_game_manager.current_team == team) {
-            scr_unit_select(id);
+if (mouse_check_button_pressed(mb_left)) {
+    if (can_accept_input()) {
+        var mouse_hex = pixel_to_hex(mouse_x, mouse_y);
+        var mouse_q = mouse_hex[0];
+        var mouse_r = mouse_hex[1];
+        
+        // Check if clicking on this unit
+        if (mouse_q == grid_x && mouse_r == grid_y && !has_acted) {
+            if (obj_game_manager.current_team == team) {
+                scr_unit_select(id);
+            }
         }
-    }
-    // Check if this unit is selected and clicking elsewhere
-    else if (is_selected) {
-        // Use new action system instead of old scr_unit_handle_action
-        process_unit_action_input(id, mouse_q, mouse_r);
+        // Check if this unit is selected and clicking elsewhere
+        else if (is_selected) {
+            // Use new action system instead of old scr_unit_handle_action
+            process_unit_action_input(id, mouse_q, mouse_r);
+        }
+    } else {
+        // Only log when mouse is actually clicked and input is blocked
+        log_input_blocked_reason();
     }
 }
 
 // Right-click to wait/end turn for selected unit (only when game can accept input)
-if (mouse_check_button_pressed(mb_right) && is_selected && can_accept_input()) {
-    var wait_action = create_wait_action(id);
-    queue_action(wait_action);
-    process_next_action();
+if (mouse_check_button_pressed(mb_right) && is_selected) {
+    if (can_accept_input()) {
+        var wait_action = create_wait_action(id);
+        queue_action(wait_action);
+        process_next_action();
+    } else {
+        log_input_blocked_reason();
+    }
 }
 
 // Space to skip animation (this should work during animations)

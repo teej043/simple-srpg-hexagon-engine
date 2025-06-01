@@ -120,25 +120,27 @@ function can_accept_input() {
                          !action_in_progress &&
                          !animation_in_progress);
         
-        // Debug logging when input is blocked
-        if (!can_accept) {
-            var debug_msg = "[INPUT_BLOCKED] ";
-            if (game_state != GameState.WAITING_FOR_INPUT) {
-                debug_msg += "Wrong game state: " + string(game_state) + " ";
-            }
-            if (current_team != 0) {
-                debug_msg += "Not player turn: " + string(current_team) + " ";
-            }
-            if (action_in_progress) {
-                debug_msg += "Action in progress ";
-            }
-            if (animation_in_progress) {
-                debug_msg += "Animation in progress ";
-            }
-            show_debug_message(debug_msg);
-        }
-        
         return can_accept;
+    }
+}
+
+/// Log why input is blocked (call this only when input is actually attempted)
+function log_input_blocked_reason() {
+    with (obj_game_manager) {
+        var debug_msg = "[INPUT_BLOCKED] ";
+        if (game_state != GameState.WAITING_FOR_INPUT) {
+            debug_msg += "Wrong game state: " + string(game_state) + " ";
+        }
+        if (current_team != 0) {
+            debug_msg += "Not player turn: " + string(current_team) + " ";
+        }
+        if (action_in_progress) {
+            debug_msg += "Action in progress ";
+        }
+        if (animation_in_progress) {
+            debug_msg += "Animation in progress ";
+        }
+        show_debug_message(debug_msg);
     }
 }
 
