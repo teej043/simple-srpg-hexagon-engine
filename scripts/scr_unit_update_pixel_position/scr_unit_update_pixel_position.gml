@@ -12,6 +12,7 @@ function scr_unit_update_pixel_position(unit){
 	    unit.y = pos[1];
 	    unit.actual_x = pos[0];
 	    unit.actual_y = pos[1];
+	    unit.z = 0; // Set Z coordinate to ground level
 	    
 	    show_debug_message("POSITION UPDATE: Unit " + string(unit.id) + 
 	                      " moved to grid (" + string(unit.grid_x) + "," + string(unit.grid_y) + 

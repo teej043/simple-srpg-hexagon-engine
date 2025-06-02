@@ -24,14 +24,20 @@ window_center();
 //gpu_set_ztestenable(true);
 
 // Force all layers to use depth
-layer_force_draw_depth(true, 0);
+layer_force_draw_depth(true, 1);
 
 // Camera settings
-camera_distance = 700;  // Distance behind target
+camera_distance = 1000;  // Distance behind target
 camera_height = 400;   // Height above target
 camera_target_x = room_width/2;
 camera_target_y = room_height/2;
 camera_target_z = 0;
+
+camera_distance_far = 1500;
+
+// Distance interpolation for smooth transitions
+current_distance = camera_distance_far;  // Start with far distance
+distance_lerp_speed = 0.05;  // Controls how fast distance changes (lower = smoother)
 
 // Smooth camera movement
 lerp_speed = 0.1;

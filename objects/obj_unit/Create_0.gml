@@ -34,6 +34,7 @@ skip_animation = false;         // Flag to skip movement animation
 // Actual pixel position for smooth movement
 actual_x = 0;
 actual_y = 0;
+z = 0; // Z coordinate for 3D positioning
 
 // Unit state
 team = 0; // 0 = player, 1 = enemy
@@ -42,7 +43,7 @@ has_acted = false;
 is_selected = false;
 
 // Visual settings
-sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);
+//sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);
 image_speed = 0;    // Disable sprite animation
 image_index = 0;    // Start with front-facing sprite
 image_xscale = 1;   // Start facing right

@@ -1,6 +1,6 @@
-/// @description Insert description here
+	/// @description Insert description here
 
 var c_bottom = make_color_rgb(0, 0, 0);
 var c_top = make_color_rgb(sprite_height, 0, 0);
-draw_sprite_general(sprite_index, 0, 0, 0, sprite_width, sprite_height, x, y, image_xscale, 1, 0, c_top, c_top, c_bottom, c_bottom, 1);
+draw_sprite_general(sprite_index, image_index, 0, 0, sprite_width, sprite_height, x, y, image_xscale, 1, 0, c_top, c_top, c_bottom, c_bottom, 1);
 

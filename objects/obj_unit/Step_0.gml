@@ -12,13 +12,32 @@ if (is_moving) {
         var total_dx = final_pos[0] - start_pos[0];
         var total_dy = final_pos[1] - start_pos[1];
         
+        show_debug_message("Skip animation direction calculation: total_dx=" + string(total_dx) + ", total_dy=" + string(total_dy));
+        
         // Prioritize the most significant direction change
         if (abs(total_dx) >= abs(total_dy)) {
-            image_xscale = (total_dx > 0) ? 1 : -1;
-            image_index = 0; // Front facing for horizontal movement
+            // Horizontal movement takes priority
+            if (total_dx > 0) {
+                // Moving east
+                image_xscale = 1;
+                image_index = 0;
+                show_debug_message("Skip animation direction: EAST (total_dx > 0) - image_index = 0");
+            } else {
+                // Moving west - use image_index = 1
+                image_xscale = 1;
+                image_index = 1;
+                show_debug_message("Skip animation direction: WEST (total_dx < 0) - image_index = 1");
+            }
         } else {
+            // Vertical movement
             image_xscale = 1; // Reset horizontal flip
-            image_index = (total_dy < 0) ? 1 : 0; // Back facing for up, front for down
+            if (total_dy < 0) {
+                image_index = 1;
+                show_debug_message("Skip animation direction: NORTH (total_dy < 0) - image_index = 1 (back-facing)");
+            } else {
+                image_index = 0;
+                show_debug_message("Skip animation direction: SOUTH (total_dy > 0) - image_index = 0 (front-facing)");
+            }
         }
         
         grid_x = final_pos[0];
@@ -96,14 +115,33 @@ if (is_moving) {
                 var dx = next_pos[0] - current_pos[0];
                 var dy = next_pos[1] - current_pos[1];
                 
-                // Determine horizontal facing (left/right)
-                if (dx != 0) {
-                    image_xscale = (dx > 0) ? 1 : -1;
-                }
+                show_debug_message("Direction calculation: dx=" + string(dx) + ", dy=" + string(dy));
                 
-                // Determine vertical facing (front/back)
-                if (dy != 0) {
-                    image_index = (dy < 0) ? 1 : 0; // 1 for back (facing north), 0 for front (facing south)
+                // Determine facing direction
+                // Prioritize the most significant direction change
+                if (abs(dx) >= abs(dy)) {
+                    // Horizontal movement takes priority
+                    if (dx > 0) {
+                        // Moving east
+                        image_xscale = 1;
+                        image_index = 0;
+                        show_debug_message("Set direction: EAST (dx > 0) - image_index = 0");
+                    } else {
+                        // Moving west - use image_index = 1
+                        image_xscale = 1;
+                        image_index = 1;
+                        show_debug_message("Set direction: WEST (dx < 0) - image_index = 1");
+                    }
+                } else {
+                    // Vertical movement
+                    image_xscale = 1; // Reset horizontal flip
+                    if (dy < 0) {
+                        image_index = 1;
+                        show_debug_message("Set direction: NORTH (dy < 0) - image_index = 1 (back-facing)");
+                    } else {
+                        image_index = 0;
+                        show_debug_message("Set direction: SOUTH (dy > 0) - image_index = 0 (front-facing)");
+                    }
                 }
                 
                 show_debug_message("Reached next position. Grid position now: [" + string(grid_x) + "," + string(grid_y) + "]");
@@ -130,13 +168,32 @@ if (is_moving) {
                     var total_dx = final_pos[0] - start_pos[0];
                     var total_dy = final_pos[1] - start_pos[1];
                     
+                    show_debug_message("Final direction calculation: total_dx=" + string(total_dx) + ", total_dy=" + string(total_dy));
+                    
                     // Prioritize the most significant direction change
                     if (abs(total_dx) >= abs(total_dy)) {
-                        image_xscale = (total_dx > 0) ? 1 : -1;
-                        image_index = 0; // Front facing for horizontal movement
+                        // Horizontal movement takes priority
+                        if (total_dx > 0) {
+                            // Moving east
+                            image_xscale = 1;
+                            image_index = 0;
+                            show_debug_message("Final direction: EAST (total_dx > 0) - image_index = 0");
+                        } else {
+                            // Moving west - use image_index = 1
+                            image_xscale = 1;
+                            image_index = 1;
+                            show_debug_message("Final direction: WEST (total_dx < 0) - image_index = 1");
+                        }
                     } else {
+                        // Vertical movement
                         image_xscale = 1; // Reset horizontal flip
-                        image_index = (total_dy < 0) ? 1 : 0; // Back facing for up, front for down
+                        if (total_dy < 0) {
+                            image_index = 1;
+                            show_debug_message("Final direction: NORTH (total_dy < 0) - image_index = 1 (back-facing)");
+                        } else {
+                            image_index = 0;
+                            show_debug_message("Final direction: SOUTH (total_dy > 0) - image_index = 0 (front-facing)");
+                        }
                     }
                     
                     show_debug_message("=== MOVEMENT COMPLETE ===");
