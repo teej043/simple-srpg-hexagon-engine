@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"draw_hexagon",
+  "%Name":"create_base_grid_surface",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"draw_hexagon",
+  "name":"create_base_grid_surface",
   "parent":{
     "name":"Grid management",
     "path":"folders/Scripts/Grid management.yy",

@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"draw_hexagon",
+  "%Name":"is_highlights_changed",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"draw_hexagon",
+  "name":"is_highlights_changed",
   "parent":{
     "name":"Grid management",
     "path":"folders/Scripts/Grid management.yy",

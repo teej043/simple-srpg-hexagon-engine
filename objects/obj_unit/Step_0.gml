@@ -1,10 +1,12 @@
 /// @description Insert description here
 // You can write your code in this editor
-
+depth = -y;
 // Handle movement animation
 if (is_moving) {
     if (skip_animation) {
-        show_debug_message("=== SKIPPING ANIMATION ===");
+        if (DEBUG) {
+            show_debug_message("=== SKIPPING ANIMATION ===");
+        }
         var final_pos = ds_list_find_value(movement_path, ds_list_size(movement_path) - 1);
         var start_pos = ds_list_find_value(movement_path, 0);
         
@@ -31,9 +33,11 @@ if (is_moving) {
         is_moving = false;
         has_moved = true;
         
-        show_debug_message("Skipped to final position: Grid[" + string(grid_x) + "," + string(grid_y) + 
-                          "] Pixel[" + string(actual_x) + "," + string(actual_y) + "]");
-        show_debug_message("Final facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+        if (DEBUG) {
+            show_debug_message("Skipped to final position: Grid[" + string(grid_x) + "," + string(grid_y) + 
+                              "] Pixel[" + string(actual_x) + "," + string(actual_y) + "]");
+            show_debug_message("Final facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+        }
         
         // Place unit back on grid at final position
         place_unit_on_grid(id, grid_x, grid_y);
@@ -54,12 +58,14 @@ if (is_moving) {
     else {
         // Log the entire movement path at the start of movement
         if (current_path_position == 0 && move_progress == 0) {
-            show_debug_message("=== MOVEMENT PATH START ===");
-            for (var i = 0; i < ds_list_size(movement_path); i++) {
-                var pos = ds_list_find_value(movement_path, i);
-                show_debug_message("Path position " + string(i) + ": [" + string(pos[0]) + "," + string(pos[1]) + "]");
+            if (DEBUG) {
+                show_debug_message("=== MOVEMENT PATH START ===");
+                for (var i = 0; i < ds_list_size(movement_path); i++) {
+                    var pos = ds_list_find_value(movement_path, i);
+                    show_debug_message("Path position " + string(i) + ": [" + string(pos[0]) + "," + string(pos[1]) + "]");
+                }
+                show_debug_message("=== MOVEMENT PATH END ===");
             }
-            show_debug_message("=== MOVEMENT PATH END ===");
         }
 
         if (current_path_position < ds_list_size(movement_path) - 1) {
@@ -68,9 +74,11 @@ if (is_moving) {
             var next_pos = ds_list_find_value(movement_path, current_path_position + 1);
             
             // Log current movement state
-            show_debug_message("Moving from [" + string(current_pos[0]) + "," + string(current_pos[1]) + 
-                             "] to [" + string(next_pos[0]) + "," + string(next_pos[1]) + 
-                             "] Progress: " + string(move_progress));
+            if (DEBUG) {
+                show_debug_message("Moving from [" + string(current_pos[0]) + "," + string(current_pos[1]) + 
+                                 "] to [" + string(next_pos[0]) + "," + string(next_pos[1]) + 
+                                 "] Progress: " + string(move_progress));
+            }
             
             // Convert hex coordinates to pixel positions
             var current_pixel = hex_to_pixel(current_pos[0], current_pos[1]);
@@ -82,7 +90,9 @@ if (is_moving) {
             x = actual_x;
             y = actual_y;
             
-            show_debug_message("Current pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
+            if (DEBUG) {
+                show_debug_message("Current pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
+            }
             
             // Interpolate between positions
             move_progress += move_speed;
@@ -114,9 +124,11 @@ if (is_moving) {
                     image_index = (dy < 0) ? 1 : 0; // 1 for back (facing north), 0 for front (facing south)
                 }
                 
-                show_debug_message("Reached next position. Grid position now: [" + string(grid_x) + "," + string(grid_y) + "]");
-                show_debug_message("Snapped to pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
-                show_debug_message("Facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+                if (DEBUG) {
+                    show_debug_message("Reached next position. Grid position now: [" + string(grid_x) + "," + string(grid_y) + "]");
+                    show_debug_message("Snapped to pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
+                    show_debug_message("Facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+                }
                 
                 // Check if we've reached the end of the path
                 if (current_path_position >= ds_list_size(movement_path) - 1) {
@@ -147,10 +159,12 @@ if (is_moving) {
                         image_index = (total_dy < 0) ? 1 : 0; // Back facing for up, front for down
                     }
                     
-                    show_debug_message("=== MOVEMENT COMPLETE ===");
-                    show_debug_message("Final grid position: [" + string(grid_x) + "," + string(grid_y) + "]");
-                    show_debug_message("Final pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
-                    show_debug_message("Final facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+                    if (DEBUG) {
+                        show_debug_message("=== MOVEMENT COMPLETE ===");
+                        show_debug_message("Final grid position: [" + string(grid_x) + "," + string(grid_y) + "]");
+                        show_debug_message("Final pixel position: [" + string(actual_x) + "," + string(actual_y) + "]");
+                        show_debug_message("Final facing direction: xscale=" + string(image_xscale) + ", index=" + string(image_index));
+                    }
                     
                     // Place unit back on grid at final position
                     place_unit_on_grid(id, grid_x, grid_y);

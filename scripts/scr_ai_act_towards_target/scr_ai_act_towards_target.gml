@@ -40,7 +40,9 @@ function scr_ai_act_towards_target(unit, target){
 
 	// If we can attack any target and haven't acted yet, do it immediately
 	if (can_attack && !unit.has_acted && instance_exists(best_attack_target)) {
-		show_debug_message("AI: Attacking target from position (" + string(unit.grid_x) + "," + string(unit.grid_y) + ")");
+		if (DEBUG) {
+			show_debug_message("AI: Attacking target from position (" + string(unit.grid_x) + "," + string(unit.grid_y) + ")");
+		}
 		execute_attack(unit, best_attack_target);
 		unit.has_acted = true;
 		
@@ -74,7 +76,9 @@ function scr_ai_act_towards_target(unit, target){
 			}
 			
 			if (best_new_target != noone && instance_exists(best_new_target)) {
-				show_debug_message("AI: Moving towards new target (HP: " + string(best_new_target.current_hp) + ", Distance: " + string(best_distance) + ")");
+				if (DEBUG) {
+					show_debug_message("AI: Moving towards new target (HP: " + string(best_new_target.current_hp) + ", Distance: " + string(best_distance) + ")");
+				}
 				scr_ai_move_towards(unit, best_new_target);
 				
 				// Store target info for post-movement check
@@ -125,7 +129,9 @@ function scr_ai_act_towards_target(unit, target){
 		}
 		
 		if (instance_exists(best_move_target)) {
-			show_debug_message("AI: Moving towards best target (HP: " + string(best_move_target.current_hp) + ", Distance: " + string(best_distance) + ")");
+			if (DEBUG) {
+				show_debug_message("AI: Moving towards best target (HP: " + string(best_move_target.current_hp) + ", Distance: " + string(best_distance) + ")");
+			}
 			scr_ai_move_towards(unit, best_move_target);
 			
 			// Store target info for post-movement check
@@ -145,7 +151,9 @@ function scr_ai_act_towards_target(unit, target){
 	
 	// If we can't do anything else, wait
 	if (!unit.has_moved || !unit.has_acted) {
-		show_debug_message("AI: Waiting (no valid actions)");
+		if (DEBUG) {
+			show_debug_message("AI: Waiting (no valid actions)");
+		}
 		scr_unit_wait(unit);
 	}
 }

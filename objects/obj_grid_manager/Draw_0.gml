@@ -1,27 +1,32 @@
 /// @description Insert description here
 // You can write your code in this editor
+draw_clear(#4E9943);
 
-// Draw hexagonal grid
-for (var q = 0; q < grid_width; q++) {
-    for (var r = 0; r < grid_height; r++) {
-        var pos = hex_to_pixel(q, r);
-        var x_pos = pos[0];
-        var y_pos = pos[1];
-        
-        // Set color based on highlight
-        switch (highlight_grid[q][r]) {
-            case 0: draw_set_color(c_gray); break;      // Normal
-            case 1: draw_set_color(c_blue); break;      // Movement
-            case 2: draw_set_color(c_red); break;       // Attack
-            case 3: draw_set_color(c_green); break;     // Selected
-            case 4: draw_set_color(c_yellow); break;    // Keyboard cursor
-        }
-        
-        draw_set_alpha(0.3);
-        draw_hexagon(x_pos, y_pos, hex_size, true);
-        
-        draw_set_color(c_white);
-        draw_set_alpha(1);
-        draw_hexagon(x_pos, y_pos, hex_size, false);
-    }
+// Draw sprite-based hexagon grid first (behind everything)
+draw_hex_grid_sprite(grid_width, grid_height, hex_size, spr_hex);
+
+// Surface-based rendering for highlights and outlines
+// Recreate base surface if needed
+//if (surface_needs_update || !surface_exists(base_grid_surface)) {
+//    base_grid_surface = create_base_grid_surface(base_grid_surface, grid_width, grid_height, hex_size, room_width, room_height);
+//    surface_needs_update = false;
+//}
+
+// Update highlight surface if needed
+// Alternative optimization using is_highlights_changed function:
+// if (is_highlights_changed(grid_width, grid_height, highlight_grid, prev_highlight_grid) || !surface_exists(highlight_surface)) {
+if (highlight_needs_update || !surface_exists(highlight_surface)) {
+    highlight_surface = create_highlight_surface(highlight_surface, grid_width, grid_height, hex_size, highlight_grid, room_width, room_height);
+    update_prev_highlights_array(grid_width, grid_height, highlight_grid, prev_highlight_grid); // Update the previous state after creating highlight surface
+    highlight_needs_update = false;
+}
+
+// Draw the base grid (white outlines)
+//if (surface_exists(base_grid_surface)) {
+//    draw_surface(base_grid_surface, 0, 0);
+//}
+
+// Draw the highlights
+if (surface_exists(highlight_surface)) {
+    draw_surface(highlight_surface, 0, 0);
 }

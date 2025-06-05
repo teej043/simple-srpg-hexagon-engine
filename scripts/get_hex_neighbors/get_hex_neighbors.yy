@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"get_hex_neighbors",
   "parent":{
-    "name":"Utilities",
-    "path":"folders/Scripts/Utilities.yy",
+    "name":"Grid management",
+    "path":"folders/Scripts/Grid management.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

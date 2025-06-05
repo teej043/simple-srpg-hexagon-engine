@@ -64,7 +64,9 @@ function scr_ai_move_towards(unit, target){
 	    while (current_q != unit.grid_x || current_r != unit.grid_y) {
 	        iterations++;
 	        if (iterations > max_iterations) {
-	            show_debug_message("AI pathfinding exceeded maximum iterations!");
+	            if (DEBUG) {
+	                show_debug_message("AI pathfinding exceeded maximum iterations!");
+	            }
 	            ds_list_clear(unit.movement_path);
 	            return;
 	        }
@@ -93,8 +95,10 @@ function scr_ai_move_towards(unit, target){
 	        
 	        // If we can't find the next step, something went wrong
 	        if (!found_next) {
-	            show_debug_message("AI path finding failed! Current value: " + string(current_value));
-	            show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
+	            if (DEBUG) {
+	                show_debug_message("AI path finding failed! Current value: " + string(current_value));
+	                show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
+	            }
 	            ds_list_clear(unit.movement_path);
 	            return;
 	        }
@@ -110,15 +114,19 @@ function scr_ai_move_towards(unit, target){
 	    // Reset animation flags
 	    unit.skip_animation = false;
 	    
-	    show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
-	                      " (Can attack after move: " + string(can_attack_after_move) + ")");
-	                      
 	    // Skip animation after a short delay
 	    with (obj_game_manager) {
 	        alarm[1] = 30; // Set a timer to skip animation after 0.5 seconds
 	    }
+	    
+	    if (DEBUG) {
+	        show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
+	                          " (Can attack after move: " + string(can_attack_after_move) + ")");
+	    }
 	} else {
-	    show_debug_message("AI unit couldn't find better position than current");
+	    if (DEBUG) {
+	        show_debug_message("AI unit couldn't find better position than current");
+	    }
 	}
 
 	scr_clear_highlights();

@@ -130,7 +130,9 @@ function import_unit_data_from_json(unit, json_string) {
         
         return true;
     } catch(e) {
-        show_debug_message("Error importing unit data: " + string(e));
+        if (DEBUG) {
+            show_debug_message("Error importing unit data: " + string(e));
+        }
         return false;
     }
 } 

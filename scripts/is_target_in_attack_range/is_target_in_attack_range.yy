@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"is_target_in_attack_range",
   "parent":{
-    "name":"Utilities",
-    "path":"folders/Scripts/Utilities.yy",
+    "name":"Grid management",
+    "path":"folders/Scripts/Grid management.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

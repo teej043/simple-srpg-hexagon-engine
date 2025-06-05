@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"draw_hexagon",
+  "%Name":"resize_grid",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"draw_hexagon",
+  "name":"resize_grid",
   "parent":{
     "name":"Grid management",
     "path":"folders/Scripts/Grid management.yy",

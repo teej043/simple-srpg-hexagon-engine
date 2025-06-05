@@ -46,5 +46,8 @@ function calculate_movement_range(unit){
     }
 
     ds_queue_destroy(queue);
+    
+    // Mark highlight surface for update
+    highlight_needs_update = true;
 }
 }

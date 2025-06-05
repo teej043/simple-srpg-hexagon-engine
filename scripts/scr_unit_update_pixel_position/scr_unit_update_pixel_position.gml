@@ -13,8 +13,10 @@ function scr_unit_update_pixel_position(unit){
 	    unit.actual_x = pos[0];
 	    unit.actual_y = pos[1];
 	    
-	    show_debug_message("POSITION UPDATE: Unit " + string(unit.id) + 
-	                      " moved to grid (" + string(unit.grid_x) + "," + string(unit.grid_y) + 
-	                      ") at pixel position (" + string(pos[0]) + "," + string(pos[1]) + ")");
+	    if (DEBUG) {
+	        show_debug_message("POSITION UPDATE: Unit " + string(unit.id) + 
+	                          " moved to grid (" + string(unit.grid_x) + "," + string(unit.grid_y) + 
+	                          ") at pixel position (" + string(pos[0]) + "," + string(pos[1]) + ")");
+	    }
 	}
 }

@@ -103,15 +103,19 @@ if (instance_exists(obj_game_manager)) {
             target_x = new_cam_x;
             target_y = new_cam_y;
             
-            show_debug_message("Initial camera position set to: " + string(new_cam_x) + "," + string(new_cam_y));
+            if (DEBUG) {
+                show_debug_message("Initial camera position set to: " + string(new_cam_x) + "," + string(new_cam_y));
+            }
         }
     }
 }
 
 // Debug initial camera state
-show_debug_message("Camera initialized:");
-show_debug_message("View enabled: " + string(view_enabled));
-show_debug_message("View visible: " + string(view_visible[0]));
-show_debug_message("View port size: " + string(view_wport[0]) + "x" + string(view_hport[0]));
-show_debug_message("Camera view size: " + string(camera_get_view_width(view_camera[0])) + "x" + string(camera_get_view_height(view_camera[0])));
-show_debug_message("Camera position: " + string(camera_get_view_x(view_camera[0])) + "," + string(camera_get_view_y(view_camera[0]))); 
+if (DEBUG) {
+    show_debug_message("Camera initialized:");
+    show_debug_message("View enabled: " + string(view_enabled));
+    show_debug_message("View visible: " + string(view_visible[0]));
+    show_debug_message("View port size: " + string(view_wport[0]) + "x" + string(view_hport[0]));
+    show_debug_message("Camera view size: " + string(camera_get_view_width(view_camera[0])) + "x" + string(camera_get_view_height(view_camera[0])));
+    show_debug_message("Camera position: " + string(camera_get_view_x(view_camera[0])) + "," + string(camera_get_view_y(view_camera[0])));
+} 

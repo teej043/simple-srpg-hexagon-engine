@@ -1,8 +1,5 @@
-/// @description Insert description here
-// You can write your code in this editor
-
 /// @description Initialize grid manager
-
+depth=1;
 
 // Grid settings - these can be modified to change grid size
 hex_size = 45;  // Base size of hexagons
@@ -18,6 +15,12 @@ var total_width = hex_width * (grid_width + 0.5);  // Add 0.5 for offset rows
 var total_height = hex_size * (grid_height * 1.5);
 grid_offset_x = (room_width - total_width) / 2;
 grid_offset_y = (room_height - total_height) / 2;
+
+// Surface rendering for performance optimization
+base_grid_surface = -1;        // Surface for static grid base
+highlight_surface = -1;        // Surface for dynamic highlights
+surface_needs_update = true;   // Flag to redraw surfaces
+highlight_needs_update = true; // Flag to redraw highlight surface
 
 // Grid array to store unit references
 grid = array_create(grid_width);
@@ -35,6 +38,12 @@ for (var i = 0; i < grid_width; i++) {
 highlight_grid = array_create(grid_width);
 for (var i = 0; i < grid_width; i++) {
     highlight_grid[i] = array_create(grid_height, 0);
+}
+
+// Previous highlight state for change detection
+prev_highlight_grid = array_create(grid_width);
+for (var i = 0; i < grid_width; i++) {
+    prev_highlight_grid[i] = array_create(grid_height, 0);
 }
 
 // Initialize hex directions for flat-topped hexagons
@@ -63,53 +72,9 @@ function get_hex_directions(row) {
     return (row % 2 == 0) ? even_hex_directions : odd_hex_directions;
 }
 
-// Function to resize grid
-function resize_grid(new_width, new_height) {
-    // Store old dimensions
-    var old_width = grid_width;
-    var old_height = grid_height;
-    
-    // Update dimensions
-    grid_width = new_width;
-    grid_height = new_height;
-    
-    // Recalculate grid offset (adjusted for flat-topped with offset rows)
-    var total_width = hex_width * (grid_width + 0.5);  // Add 0.5 for offset rows
-    var total_height = hex_size * (grid_height * 1.5);
-    grid_offset_x = (room_width - total_width) / 2;
-    grid_offset_y = (room_height - total_height) / 2;
-    
-    // Resize grids
-    var new_grid = array_create(grid_width);
-    var new_movement_grid = array_create(grid_width);
-    var new_highlight_grid = array_create(grid_width);
-    
-    for (var i = 0; i < grid_width; i++) {
-        new_grid[i] = array_create(grid_height, noone);
-        new_movement_grid[i] = array_create(grid_height, -1);
-        new_highlight_grid[i] = array_create(grid_height, 0);
-        
-        // Copy existing data if within old bounds
-        for (var j = 0; j < grid_height; j++) {
-            if (i < old_width && j < old_height) {
-                new_grid[i][j] = grid[i][j];
-                new_movement_grid[i][j] = movement_grid[i][j];
-                new_highlight_grid[i][j] = highlight_grid[i][j];
-            }
-        }
-    }
-    
-    // Update grid references
-    grid = new_grid;
-    movement_grid = new_movement_grid;
-    highlight_grid = new_highlight_grid;
-    
-    // Update unit positions
-    with (obj_unit) {
-        if (grid_x >= grid_width || grid_y >= grid_height) {
-            instance_destroy();
-        } else {
-            scr_unit_update_pixel_position(id);
-        }
-    }
-}
+// Create initial surfaces using the new parameterized functions
+base_grid_surface = create_base_grid_surface(base_grid_surface, grid_width, grid_height, hex_size, room_width, room_height);
+highlight_surface = create_highlight_surface(highlight_surface, grid_width, grid_height, hex_size, highlight_grid, room_width, room_height);
+update_prev_highlights_array(grid_width, grid_height, highlight_grid, prev_highlight_grid); // Update the previous state after creating highlight surface
+surface_needs_update = false;
+highlight_needs_update = false; 

@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"draw_hexagon",
+  "%Name":"constants",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"draw_hexagon",
+  "name":"constants",
   "parent":{
-    "name":"Grid management",
-    "path":"folders/Scripts/Grid management.yy",
+    "name":"Data management",
+    "path":"folders/Scripts/Data management.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

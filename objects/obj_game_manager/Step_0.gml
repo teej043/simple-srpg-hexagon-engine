@@ -10,6 +10,14 @@ with (obj_unit) {
     }
 }
 
+// Debug check for enter key at global level
+if (keyboard_check_pressed(vk_enter) && DEBUG) {
+    show_debug_message("=== ENTER KEY DETECTED (global check) ===");
+    show_debug_message("Current team: " + string(current_team));
+    show_debug_message("Any unit moving: " + string(any_unit_moving));
+    show_debug_message("Cursor active: " + string(cursor_active));
+}
+
 if (keyboard_check_pressed(vk_space) && current_team == 0 && !any_unit_moving) {
     scr_game_end_turn();
 }
@@ -94,12 +102,29 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 }
             }
         }
+        
+        // Initial highlight setup when cursor becomes active
+        scr_clear_highlights();
+        // If there's a selected unit, show its ranges
+        if (selected_unit != noone) {
+            if (!selected_unit.has_moved) {
+                calculate_movement_range(selected_unit);
+            } else if (!selected_unit.has_acted) {
+                calculate_attack_range(selected_unit);
+            }
+            obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
+        }
+        // Set initial cursor highlight
+        obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
+        obj_grid_manager.highlight_needs_update = true;
     }
     
     if (cursor_active) {
         // Handle cursor movement with delay
         if (cursor_move_timer <= 0) {
             var moved = false;
+            var old_cursor_q = cursor_q;
+            var old_cursor_r = cursor_r;
             
             // Get the correct hex directions based on the current row
             var directions = obj_grid_manager.get_hex_directions(cursor_r);
@@ -137,72 +162,139 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 }
             }
             
-            // If cursor moved, reset the timer
+            // Only update highlights if cursor actually moved
             if (moved) {
+                // Instead of trying to restore individual highlights, 
+                // refresh the entire highlight state efficiently
+                scr_clear_highlights();
+                
+                // Restore range highlights if there's a selected unit
+                if (selected_unit != noone) {
+                    if (!selected_unit.has_moved) {
+                        calculate_movement_range(selected_unit);
+                    } else if (!selected_unit.has_acted) {
+                        calculate_attack_range(selected_unit);
+                    }
+                    obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
+                }
+                
+                // Set new cursor highlight
+                obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
                 cursor_move_timer = cursor_move_delay;
             }
         } else {
             cursor_move_timer--;
         }
         
-        // Update highlights whenever cursor is active
-        scr_clear_highlights();
-        
-        // If there's a selected unit, show its ranges
-        if (selected_unit != noone) {
-            if (!selected_unit.has_moved) {
-                calculate_movement_range(selected_unit);
-            } else if (!selected_unit.has_acted) {
-                show_debug_message("Showing attack range");
-                calculate_attack_range(selected_unit);
-            }
-            obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
-        }
-        
         // Handle enter key for selection/action (like left mouse button)
         if (keyboard_check_pressed(vk_enter)) {
-            show_debug_message("Enter key pressed at cursor position: " + string(cursor_q) + "," + string(cursor_r));
+            if (DEBUG) {
+                show_debug_message("=== ENTER KEY PRESSED ===");
+                show_debug_message("Cursor position: [" + string(cursor_q) + "," + string(cursor_r) + "]");
+                show_debug_message("Cursor active: " + string(cursor_active));
+                show_debug_message("Selected unit: " + string(selected_unit));
+            }
             
             // First check if we have a selected unit
             if (selected_unit != noone) {
-                show_debug_message("Checking action with selected unit at: " + string(selected_unit.grid_x) + "," + string(selected_unit.grid_y));
+                if (DEBUG) {
+                    show_debug_message("Checking action with selected unit at: [" + string(selected_unit.grid_x) + "," + string(selected_unit.grid_y) + "]");
+                    show_debug_message("Unit has_moved: " + string(selected_unit.has_moved) + ", has_acted: " + string(selected_unit.has_acted));
+                }
                 
-                // Check if there's an enemy unit at the cursor position
+                // Check if there's an enemy unit at the cursor position for attack
                 var unit_at_cursor = get_unit_at(cursor_q, cursor_r);
+                if (DEBUG) {
+                    show_debug_message("Unit at cursor position: " + string(unit_at_cursor));
+                    if (unit_at_cursor != noone) {
+                        show_debug_message("Unit team: " + string(unit_at_cursor.team) + " vs selected unit team: " + string(selected_unit.team));
+                    }
+                }
+                
                 if (unit_at_cursor != noone && unit_at_cursor.team != selected_unit.team && !selected_unit.has_acted) {
+                    if (DEBUG) {
+                        show_debug_message("Found enemy unit, checking attack range...");
+                    }
                     // Use the same flood fill algorithm as attack range visualization
                     var can_attack = is_target_in_attack_range(selected_unit, cursor_q, cursor_r);
                     
                     if (can_attack) {
-                        show_debug_message("Valid attack target found, performing attack");
+                        if (DEBUG) {
+                            show_debug_message("Valid attack target found, performing attack");
+                        }
                         scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
                         exit;
+                    } else {
+                        if (DEBUG) {
+                            show_debug_message("Enemy unit found but not in attack range");
+                        }
                     }
                 }
                 
                 // If no attack was possible, check for movement
-                var highlight_value = obj_grid_manager.highlight_grid[cursor_q][cursor_r];
-                show_debug_message("Checking for movement. Highlight value at cursor: " + string(highlight_value));
-                
-                if (highlight_value == 1) { // Movement tile
-                    show_debug_message("Valid movement tile found, performing move");
-                    scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
-                    exit;
+                // We need to check movement range differently since cursor highlight (4) overwrites movement highlight (1)
+                if (!selected_unit.has_moved) {
+                    // First check bounds to avoid array access errors
+                    if (cursor_q >= 0 && cursor_q < obj_grid_manager.grid_width && 
+                        cursor_r >= 0 && cursor_r < obj_grid_manager.grid_height) {
+                        
+                        // Check if cursor position is reachable by looking at the movement grid
+                        // movement_grid stores the movement cost to reach each position (-1 means unreachable)
+                        var movement_cost = obj_grid_manager.movement_grid[cursor_q][cursor_r];
+                        if (DEBUG) {
+                            show_debug_message("Movement cost to cursor position [" + string(cursor_q) + "," + string(cursor_r) + "]: " + string(movement_cost));
+                            show_debug_message("Unit at cursor: " + string(unit_at_cursor));
+                        }
+                        if (movement_cost != -1 && movement_cost > 0) {
+                            // Also check if the position is empty (no unit there)
+                            if (unit_at_cursor == noone) {
+                                if (DEBUG) {
+                                    show_debug_message("Valid movement target found, performing move (cost: " + string(movement_cost) + ")");
+                                }
+                                scr_unit_handle_action(selected_unit, cursor_q, cursor_r);
+                                exit;
+                            } else {
+                                if (DEBUG) {
+                                    show_debug_message("Cannot move - position occupied by unit: " + string(unit_at_cursor));
+                                }
+                            }
+                        } else {
+                            if (DEBUG) {
+                                show_debug_message("Cannot move - position not in movement range (cost: " + string(movement_cost) + ")");
+                            }
+                        }
+                    } else {
+                        if (DEBUG) {
+                            show_debug_message("Cannot move - cursor position out of bounds");
+                        }
+                    }
+                } else {
+                    if (DEBUG) {
+                        show_debug_message("Unit has already moved this turn");
+                    }
                 }
             }
             
             // If no action was performed, try to select a unit
             var unit_at_cursor = get_unit_at(cursor_q, cursor_r);
-            show_debug_message("Checking for unit selection. Unit at cursor: " + string(unit_at_cursor));
+            if (DEBUG) {
+                show_debug_message("Checking for unit selection. Unit at cursor: " + string(unit_at_cursor));
+            }
             
             if (unit_at_cursor != noone && unit_at_cursor.team == current_team && !unit_at_cursor.has_acted) {
-                show_debug_message("Found valid player unit to select");
+                if (DEBUG) {
+                    show_debug_message("Found valid player unit to select");
+                }
                 if (unit_at_cursor != selected_unit) {
                     scr_unit_select(unit_at_cursor);
                     // Reset cursor position to the newly selected unit
                     cursor_q = unit_at_cursor.grid_x;
                     cursor_r = unit_at_cursor.grid_y;
-                    show_debug_message("Selected new unit and moved cursor to: " + string(cursor_q) + "," + string(cursor_r));
+                    // Update cursor highlight (scr_unit_select already triggers highlight update)
+                    obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
+                    if (DEBUG) {
+                        show_debug_message("Selected new unit and moved cursor to: " + string(cursor_q) + "," + string(cursor_r));
+                    }
                 }
             }
         }
@@ -215,6 +307,8 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 // If no unit is selected, try to select the unit at cursor
                 if (unit_at_cursor != noone && unit_at_cursor.team == current_team && !unit_at_cursor.has_acted) {
                     scr_unit_select(unit_at_cursor);
+                    // Update cursor highlight (scr_unit_select already triggers highlight update)
+                    obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
                 }
             } else {
                 // If a unit is selected, try to perform an action
@@ -235,9 +329,6 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
                 obj_grid_manager.highlight_grid[selected_unit.grid_x][selected_unit.grid_y] = 3;
             }
         }
-        
-        // Always update cursor highlight last
-        obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
     }
 }
 
