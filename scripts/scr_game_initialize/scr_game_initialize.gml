@@ -10,11 +10,11 @@ with (obj_game_manager) {
     var start_x = floor((obj_grid_manager.grid_width - 5) / 2);  // Subtract 5 to center the group of 5 units
     
     // Define unit types for each team
-    var player_unit_types = ["berserker", "mage", "darkknight", "grappler", "archer"];
-    var enemy_unit_types = ["archer", "mage", "berserker", "darkknight", "grappler"];
+    var player_unit_types = ["berserker", "mage", "darkknight", "grappler", "angel", "demon", "archer"];
+    var enemy_unit_types = ["archer", "mage", "berserker", "darkknight", "grappler", "galura", "demon"];
     
     // Create player units
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 7; i++) {
         var unit_type = player_unit_types[i];
         var unit = create_unit_from_template(unit_type, start_x + i, 0, 0);
         
@@ -33,7 +33,7 @@ with (obj_game_manager) {
 
     // Create enemy units  
     var enemy_row = obj_grid_manager.grid_height - 1;
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 7; i++) {
         var unit_type = enemy_unit_types[i];
         var unit = create_unit_from_template(unit_type, start_x + i, enemy_row, 1);
         
