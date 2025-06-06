@@ -5,5 +5,6 @@ function scr_unit_wait(unit){
 	/// @param {Id.Instance} unit - The unit instance
 	unit.has_moved = true;
 	unit.has_acted = true;
+	unit.can_reverse_movement = false; // Disable movement reversal when waiting
 	scr_unit_deselect(unit);
 }

@@ -8,6 +8,9 @@ function scr_game_end_turn(){
 	    for (var i = 0; i < array_length(units); i++) {
 	        units[i].has_moved = false;
 	        units[i].has_acted = false;
+	        units[i].can_reverse_movement = false; // Reset movement reversal capability
+	        units[i].original_grid_x = units[i].grid_x; // Set current position as new original
+	        units[i].original_grid_y = units[i].grid_y;
 	        scr_unit_deselect(units[i]);
 	    }
 

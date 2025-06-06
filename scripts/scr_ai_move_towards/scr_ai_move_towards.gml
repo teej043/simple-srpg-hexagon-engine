@@ -73,6 +73,9 @@ function scr_ai_move_towards(unit, target){
 	        
 	        var found_next = false;
 	        var current_value = obj_grid_manager.movement_grid[current_q][current_r];
+	        var best_neighbor_cost = 999;
+	        var best_neighbor_q = -1;
+	        var best_neighbor_r = -1;
 	        
 	        with (obj_grid_manager) {
 	            var directions = get_hex_directions(current_r);
@@ -81,53 +84,59 @@ function scr_ai_move_towards(unit, target){
 	                var check_r = current_r + directions[i][1];
 	                
 	                if (is_valid_position(check_q, check_r)) {
-	                    // Look for a neighbor with exactly one less movement point
-	                    if (movement_grid[check_q][check_r] == current_value - 1) {
-	                        current_q = check_q;
-	                        current_r = check_r;
-	                        ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
+	                    var neighbor_cost = movement_grid[check_q][check_r];
+	                    // Look for the neighbor with the lowest cost that's less than current
+	                    if (neighbor_cost >= 0 && neighbor_cost < current_value && neighbor_cost < best_neighbor_cost) {
+	                        best_neighbor_cost = neighbor_cost;
+	                        best_neighbor_q = check_q;
+	                        best_neighbor_r = check_r;
 	                        found_next = true;
-	                        break;
 	                    }
 	                }
 	            }
 	        }
 	        
-	        // If we can't find the next step, something went wrong
-	        if (!found_next) {
-	            if (DEBUG) {
-	                show_debug_message("AI path finding failed! Current value: " + string(current_value));
-	                show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
-	            }
-	            ds_list_clear(unit.movement_path);
-	            return;
+	        if (found_next) {
+	            current_q = best_neighbor_q;
+	            current_r = best_neighbor_r;
+	            ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
 	        }
-	    }
-	    
-	    // Start movement animation
-	    unit.is_moving = true;
-	    unit.current_path_position = 0;
-	    unit.move_progress = 0;
-	    unit.has_moved = true;
-	    remove_unit_from_grid(unit);
-	    
-	    // Reset animation flags
-	    unit.skip_animation = false;
-	    
-	    // Skip animation after a short delay
-	    with (obj_game_manager) {
-	        alarm[1] = 30; // Set a timer to skip animation after 0.5 seconds
-	    }
-	    
-	    if (DEBUG) {
-	        show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
-	                          " (Can attack after move: " + string(can_attack_after_move) + ")");
-	    }
-	} else {
-	    if (DEBUG) {
-	        show_debug_message("AI unit couldn't find better position than current");
-	    }
-	}
+        
+        // If we can't find the next step, something went wrong
+        if (!found_next) {
+            if (DEBUG) {
+                show_debug_message("AI path finding failed! Current value: " + string(current_value));
+                show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
+            }
+            ds_list_clear(unit.movement_path);
+            return;
+        }
+    }
+    
+    // Start movement animation
+    unit.is_moving = true;
+    unit.current_path_position = 0;
+    unit.move_progress = 0;
+    unit.has_moved = true;
+    remove_unit_from_grid(unit);
+    
+    // Reset animation flags
+    unit.skip_animation = false;
+    
+    // Skip animation after a short delay
+    with (obj_game_manager) {
+        alarm[1] = 30; // Set a timer to skip animation after 0.5 seconds
+    }
+    
+    if (DEBUG) {
+        show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
+                          " (Can attack after move: " + string(can_attack_after_move) + ")");
+    }
+} else {
+    if (DEBUG) {
+        show_debug_message("AI unit couldn't find better position than current");
+    }
+}
 
-	scr_clear_highlights();
+scr_clear_highlights();
 }

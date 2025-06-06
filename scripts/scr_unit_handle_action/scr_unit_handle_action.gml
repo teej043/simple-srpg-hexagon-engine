@@ -44,6 +44,7 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	        }
 	        execute_attack(unit, target_unit);
 	        unit.has_acted = true;
+	        unit.can_reverse_movement = false; // Disable movement reversal after acting
         
 	        // After attacking, if unit hasn't moved yet, show movement options
 	        if (!unit.has_moved) {
@@ -84,6 +85,10 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	            show_debug_message("[MOVEMENT] " + unit.unit_type + " starting movement to [" + string(target_q) + "," + string(target_r) + "] (cost: " + string(movement_cost) + ")");
 	        }
 	        
+	        // Save original position for potential reversal
+	        unit.original_grid_x = unit.grid_x;
+	        unit.original_grid_y = unit.grid_y;
+	        
 	        // Set up movement path
 	        ds_list_clear(unit.movement_path);
 	        
@@ -96,6 +101,9 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	        while (current_q != unit.grid_x || current_r != unit.grid_y) {
 	            var found_next = false;
 	            var current_value = obj_grid_manager.movement_grid[current_q][current_r];
+	            var best_neighbor_cost = 999;
+	            var best_neighbor_q = -1;
+	            var best_neighbor_r = -1;
 	            
 	            with (obj_grid_manager) {
 	                var directions = get_hex_directions(current_r);
@@ -104,16 +112,22 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	                    var check_r = current_r + directions[i][1];
 	                    
 	                    if (is_valid_position(check_q, check_r)) {
-	                        // Look for a neighbor with exactly one less movement point
-	                        if (movement_grid[check_q][check_r] == current_value - 1) {
-	                            current_q = check_q;
-	                            current_r = check_r;
-	                            ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
+	                        var neighbor_cost = movement_grid[check_q][check_r];
+	                        // Look for the neighbor with the lowest cost that's less than current
+	                        if (neighbor_cost >= 0 && neighbor_cost < current_value && neighbor_cost < best_neighbor_cost) {
+	                            best_neighbor_cost = neighbor_cost;
+	                            best_neighbor_q = check_q;
+	                            best_neighbor_r = check_r;
 	                            found_next = true;
-	                            break;
 	                        }
 	                    }
 	                }
+	            }
+	            
+	            if (found_next) {
+	                current_q = best_neighbor_q;
+	                current_r = best_neighbor_r;
+	                ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
 	            }
 	            
 	            // If we can't find the next step, something went wrong
@@ -166,4 +180,54 @@ function scr_unit_handle_action(unit, target_q, target_r){
 	    show_debug_message("[ACTION] No valid action found. Deselecting unit.");
 	}
 	scr_unit_deselect(unit);
+}
+
+/// @function scr_reverse_movement(unit)
+/// @description Reverse a unit's movement back to its original position
+/// @param {Id.Instance} unit - The unit to reverse movement for
+function scr_reverse_movement(unit) {
+    if (!unit.can_reverse_movement || !unit.has_moved || unit.has_acted) {
+        if (DEBUG) {
+            show_debug_message("[REVERSE] Cannot reverse movement for " + unit.unit_type);
+        }
+        return;
+    }
+    
+    if (DEBUG) {
+        show_debug_message("[REVERSE] Reversing movement for " + unit.unit_type + " from [" + string(unit.grid_x) + "," + string(unit.grid_y) + "] back to [" + string(unit.original_grid_x) + "," + string(unit.original_grid_y) + "]");
+    }
+    
+    // Remove unit from current position
+    remove_unit_from_grid(unit);
+    
+    // Move unit back to original position
+    unit.grid_x = unit.original_grid_x;
+    unit.grid_y = unit.original_grid_y;
+    var original_pixel = hex_to_pixel(unit.grid_x, unit.grid_y);
+    unit.x = original_pixel[0];
+    unit.y = original_pixel[1];
+    unit.actual_x = unit.x;
+    unit.actual_y = unit.y;
+    
+    // Place unit back on grid at original position
+    place_unit_on_grid(unit, unit.grid_x, unit.grid_y);
+    
+    // Reset movement state
+    unit.has_moved = false;
+    unit.can_reverse_movement = false;
+    
+    // Clear any remaining movement path
+    ds_list_clear(unit.movement_path);
+    unit.move_progress = 0;
+    unit.current_path_position = 0;
+    unit.is_moving = false;
+    
+    // Show movement range again since unit hasn't moved
+    scr_clear_highlights();
+    calculate_movement_range(unit);
+    obj_grid_manager.highlight_grid[unit.grid_x][unit.grid_y] = 3; // Keep unit highlighted
+    
+    if (DEBUG) {
+        show_debug_message("[REVERSE] Movement reversed successfully. Unit back at original position.");
+    }
 }

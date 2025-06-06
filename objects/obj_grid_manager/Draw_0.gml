@@ -3,7 +3,7 @@
 draw_clear(#4E9943);
 
 // Draw sprite-based hexagon grid first (behind everything)
-draw_hex_grid_sprite(grid_width, grid_height, hex_size, spr_hex);
+draw_hex_grid_sprite(grid_width, grid_height, hex_size, spr_hex_plain);
 
 // Surface-based rendering for highlights and outlines
 // Recreate base surface if needed

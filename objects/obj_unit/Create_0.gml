@@ -41,6 +41,11 @@ has_moved = false;
 has_acted = false;
 is_selected = false;
 
+// Original position for movement reversal
+original_grid_x = -1; // Position before movement this turn
+original_grid_y = -1; // Position before movement this turn
+can_reverse_movement = false; // Whether movement can be reversed
+
 // Visual settings
 sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);
 image_speed = 0;    // Disable sprite animation

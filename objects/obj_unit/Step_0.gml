@@ -48,6 +48,11 @@ if (is_moving) {
         current_path_position = 0;
         skip_animation = false;
         
+        // Enable movement reversal if unit hasn't acted yet
+        if (!has_acted) {
+            can_reverse_movement = true;
+        }
+        
         // Show attack range if unit hasn't acted yet
         if (!has_acted) {
             scr_clear_highlights();
@@ -174,6 +179,11 @@ if (is_moving) {
                     current_path_position = 0;
                     skip_animation = false;
                     
+                    // Enable movement reversal if unit hasn't acted yet
+                    if (!has_acted) {
+                        can_reverse_movement = true;
+                    }
+                    
                     // Show attack range if unit hasn't acted yet
                     if (!has_acted) {
                         scr_clear_highlights();
@@ -204,9 +214,20 @@ if (mouse_check_button_pressed(mb_left)) {
     }
 }
 
-// Right-click to wait/end turn for selected unit
+// Right-click to reverse movement or wait/end turn for selected unit
 if (mouse_check_button_pressed(mb_right) && is_selected) {
-    scr_unit_wait(id);
+    if (can_reverse_movement && has_moved && !has_acted) {
+        // Reverse movement back to original position
+        scr_reverse_movement(id);
+    } else {
+        // Normal wait/end turn behavior
+        scr_unit_wait(id);
+    }
+}
+
+// Escape key to reverse movement if possible
+if (keyboard_check_pressed(vk_escape) && is_selected && can_reverse_movement && has_moved && !has_acted) {
+    scr_reverse_movement(id);
 }
 
 // Space to skip animation
