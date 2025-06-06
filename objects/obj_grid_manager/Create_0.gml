@@ -16,12 +16,6 @@ var total_height = hex_size * (grid_height * 1.5);
 grid_offset_x = (room_width - total_width) / 2;
 grid_offset_y = (room_height - total_height) / 2;
 
-// Surface rendering for performance optimization
-base_grid_surface = -1;        // Surface for static grid base
-highlight_surface = -1;        // Surface for dynamic highlights
-surface_needs_update = true;   // Flag to redraw surfaces
-highlight_needs_update = true; // Flag to redraw highlight surface
-
 // Grid array to store unit references
 grid = array_create(grid_width);
 for (var i = 0; i < grid_width; i++) {
@@ -38,12 +32,6 @@ for (var i = 0; i < grid_width; i++) {
 highlight_grid = array_create(grid_width);
 for (var i = 0; i < grid_width; i++) {
     highlight_grid[i] = array_create(grid_height, 0);
-}
-
-// Previous highlight state for change detection
-prev_highlight_grid = array_create(grid_width);
-for (var i = 0; i < grid_width; i++) {
-    prev_highlight_grid[i] = array_create(grid_height, 0);
 }
 
 // Terrain system
@@ -158,11 +146,4 @@ function get_hex_directions(row) {
 }
 
 // Setup terrain layout
-setup_terrain_layout();
-
-// Create initial surfaces using the new parameterized functions
-base_grid_surface = create_base_grid_surface(base_grid_surface, grid_width, grid_height, hex_size, room_width, room_height);
-highlight_surface = create_highlight_surface(highlight_surface, grid_width, grid_height, hex_size, highlight_grid, room_width, room_height);
-update_prev_highlights_array(grid_width, grid_height, highlight_grid, prev_highlight_grid); // Update the previous state after creating highlight surface
-surface_needs_update = false;
-highlight_needs_update = false; 
+setup_terrain_layout(); 

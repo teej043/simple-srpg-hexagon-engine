@@ -62,9 +62,8 @@ function calculate_attack_range(unit){
 		
 		// Cleanup
 		ds_queue_destroy(queue);
-		
-		// Mark highlight surface for update
-		highlight_needs_update = true;
 	}
+	
+	// No longer need surface update tracking for sprite-based rendering
 }
 

@@ -196,7 +196,6 @@ if (current_team == 0 && !any_unit_moving) {  // Only during player's turn and w
         }
         // Set initial cursor highlight
         obj_grid_manager.highlight_grid[cursor_q][cursor_r] = 4;
-        obj_grid_manager.highlight_needs_update = true;
     }
     
     if (cursor_active) {

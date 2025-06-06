@@ -12,8 +12,7 @@ function scr_clear_highlights(){
 	        }
 	    }
 	    
-	    // Mark highlight surface for update
-	    highlight_needs_update = true;
+	    // No longer need surface update tracking for sprite-based rendering
 	}
 }
 

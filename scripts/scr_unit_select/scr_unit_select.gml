@@ -39,14 +39,10 @@ function scr_unit_select(unit){
 	    calculate_attack_range(unit);
 	}
 
-	// Highlight current unit position
-	if (DEBUG) {
-		show_debug_message("[SELECT] Setting unit highlight at [" + string(unit.grid_x) + "," + string(unit.grid_y) + "]");
-	}
+	// Highlight the selected unit's current position
 	obj_grid_manager.highlight_grid[unit.grid_x][unit.grid_y] = 3; // Green highlight for selected unit
 	
-	// Mark surface for update after setting unit highlight
-	obj_grid_manager.highlight_needs_update = true;
+	// No longer need surface update tracking for sprite-based rendering
 	
 	if (DEBUG) {
 		show_debug_message("[SELECT] Unit selection complete");
