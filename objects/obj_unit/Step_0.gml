@@ -198,6 +198,11 @@ if (is_moving) {
 
 // Handle unit selection and actions
 if (mouse_check_button_pressed(mb_left)) {
+    // Block input if action panel is open
+    if (obj_game_manager.action_panel_open) {
+        return;
+    }
+    
     var mouse_hex = pixel_to_hex(mouse_x, mouse_y);
     var mouse_q = mouse_hex[0];
     var mouse_r = mouse_hex[1];
@@ -214,19 +219,27 @@ if (mouse_check_button_pressed(mb_left)) {
     }
 }
 
-// Right-click to reverse movement or wait/end turn for selected unit
+// Right-click to reverse movement (if possible)
 if (mouse_check_button_pressed(mb_right) && is_selected) {
+    // Block input if action panel is open
+    if (obj_game_manager.action_panel_open) {
+        return;
+    }
+    
     if (can_reverse_movement && has_moved && !has_acted) {
         // Reverse movement back to original position
         scr_reverse_movement(id);
-    } else {
-        // Normal wait/end turn behavior
-        scr_unit_wait(id);
     }
+    // Note: Wait functionality moved to action panel UI
 }
 
 // Escape key to reverse movement if possible
 if (keyboard_check_pressed(vk_escape) && is_selected && can_reverse_movement && has_moved && !has_acted) {
+    // Block input if action panel is open
+    if (obj_game_manager.action_panel_open) {
+        return;
+    }
+    
     scr_reverse_movement(id);
 }
 

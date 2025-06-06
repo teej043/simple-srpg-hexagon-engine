@@ -32,5 +32,39 @@ ai_pending_target = noone;
 game_over = false;
 winner = -1; // -1 = no winner, 0 = player, 1 = enemy
 
+// Action Panel UI
+action_panel_open = false;
+action_panel_selected_index = 0;
+action_panel_actions = ["Spell", "Skill", "Wait"]; // Wait moved to bottom
+action_panel_x = 0; // Will be set when panel opens
+action_panel_y = 0; // Will be set when panel opens
+
+/// @function scr_execute_action_panel_selection(action)
+/// @description Execute the selected action from the action panel
+/// @param {String} action - The selected action name
+function scr_execute_action_panel_selection(action) {
+    if (selected_unit == noone) return;
+    
+    switch(action) {
+        case "Wait":
+            scr_unit_wait(selected_unit);
+            break;
+            
+        case "Spell":
+            // TODO: Implement spell system
+            show_debug_message("Spell system not implemented yet");
+            break;
+            
+        case "Skill":
+            // TODO: Implement skill system
+            show_debug_message("Skill system not implemented yet");
+            break;
+            
+        default:
+            show_debug_message("Unknown action: " + action);
+            break;
+    }
+}
+
 // Initialize units
 scr_game_initialize();
