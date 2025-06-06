@@ -45,6 +45,9 @@ function create_unit_from_template(unit_type, grid_x, grid_y, team) {
         movement_range = stats.movement_range;
         attack_range = stats.attack_range;
         
+        // Set movement type from template
+        move_type = template.move_type ?? MOVETYPE.GROUND; // Default to GROUND if not specified
+        
         // Initialize other properties
         has_moved = false;
         has_acted = false;

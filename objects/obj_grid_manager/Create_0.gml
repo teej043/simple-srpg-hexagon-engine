@@ -116,7 +116,12 @@ terrain_movement_costs = {
 
 // Function to get movement cost for terrain (can be modified by unit type later)
 function get_terrain_movement_cost(unit, terrain_type) {
-    // Get base terrain cost
+    // SKYHIGH and SKYLOW units ignore all terrain effects
+    if (unit.move_type == MOVETYPE.SKYHIGH || unit.move_type == MOVETYPE.SKYLOW) {
+        return 1; // Always base cost for flying units
+    }
+    
+    // Get base terrain cost for GROUND units only
     var base_cost = variable_struct_get(terrain_movement_costs, terrain_type) ?? 1;
     
     // For now, return base cost - later we can add unit-specific modifiers

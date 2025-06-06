@@ -12,6 +12,7 @@ current_sp = max_sp;
 attack_power = 20;
 defense = 10;
 movement_range = 3; // Changed from 'speed' to avoid GameMaker's built-in movement
+move_type = MOVETYPE.GROUND; // Default movement type (will be set by unit factory)
 
 // Disable GameMaker's built-in movement system
 speed = 0;           // No automatic movement
