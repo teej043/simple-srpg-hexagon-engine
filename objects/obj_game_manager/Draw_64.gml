@@ -5,6 +5,10 @@
 draw_set_font(-1);
 draw_set_color(c_white);
 
+// Get camera view dimensions for proper positioning
+var cam_w = camera_get_view_width(view_camera[0]);
+var cam_h = camera_get_view_height(view_camera[0]);
+
 // Check if game is over
 if (game_state != "playing") {
     // Draw game over screen
@@ -14,25 +18,25 @@ if (game_state != "playing") {
     // Semi-transparent background
     draw_set_color(c_black);
     draw_set_alpha(0.7);
-    draw_rectangle(0, 0, room_width, room_height, false);
+    draw_rectangle(0, 0, cam_w, cam_h, false);
     
     // Game over text
     draw_set_alpha(1);
     if (game_state == "player_wins") {
         draw_set_color(c_lime);
-        draw_text_transformed(room_width/2, room_height/2 - 50, "VICTORY!", 3, 3, 0);
+        draw_text_transformed(cam_w/2, cam_h/2 - 50, "VICTORY!", 3, 3, 0);
         draw_set_color(c_white);
-        draw_text(room_width/2, room_height/2, "Player Wins!");
+        draw_text(cam_w/2, cam_h/2, "Player Wins!");
     } else if (game_state == "enemy_wins") {
         draw_set_color(c_red);
-        draw_text_transformed(room_width/2, room_height/2 - 50, "DEFEAT!", 3, 3, 0);
+        draw_text_transformed(cam_w/2, cam_h/2 - 50, "DEFEAT!", 3, 3, 0);
         draw_set_color(c_white);
-        draw_text(room_width/2, room_height/2, "Enemy Wins!");
+        draw_text(cam_w/2, cam_h/2, "Enemy Wins!");
     }
     
     draw_set_color(c_yellow);
-    draw_text(room_width/2, room_height/2 + 50, "Press R to restart");
-    draw_text(room_width/2, room_height/2 + 70, "Press ESC to quit");
+    draw_text(cam_w/2, cam_h/2 + 50, "Press R to restart");
+    draw_text(cam_w/2, cam_h/2 + 70, "Press ESC to quit");
     
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
@@ -94,15 +98,22 @@ if (selected_unit != noone) {
     if (!unit.has_moved || !unit.has_acted) {
         draw_text(10, y_pos, "Right-click to Wait");
     }
+    
+    // Add movement reversal instruction if available
+    if (unit.can_reverse_movement && unit.has_moved && !unit.has_acted) {
+        draw_set_color(c_yellow);
+        draw_text(10, y_pos + 20, "ESC/Right-click: Reverse movement");
+        draw_set_color(c_white);
+    }
 }
 
-// Instructions
+// Instructions (positioned at bottom of view)
 draw_set_color(c_yellow);
-draw_text(10, room_height - 120, "Controls:");
-draw_text(10, room_height - 100, "Left-click: Select/Move/Attack");
-draw_text(10, room_height - 80, "Right-click: Wait (end unit turn)");
-draw_text(10, room_height - 60, "Tab: Cycle through available units");
-draw_text(10, room_height - 40, "Arrow Keys: Move cursor");
-draw_text(10, room_height - 20, "Enter/Space: Select/Act with cursor");
-draw_text(200, room_height - 20, "Esc: Exit cursor mode");
+draw_text(10, cam_h - 120, "Controls:");
+draw_text(10, cam_h - 100, "Left-click: Select/Move/Attack");
+draw_text(10, cam_h - 80, "Right-click: Wait (end unit turn)");
+draw_text(10, cam_h - 60, "Tab: Cycle through available units");
+draw_text(10, cam_h - 40, "Arrow Keys: Move cursor");
+draw_text(10, cam_h - 20, "Enter/Space: Select/Act with cursor");
+draw_text(200, cam_h - 20, "Esc: Exit cursor mode");
 draw_set_color(c_white);
