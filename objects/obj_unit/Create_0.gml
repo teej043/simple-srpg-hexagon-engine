@@ -1,6 +1,9 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+// Unit type and basic info
+unit_type = "none"; // Will be set by unit factory
+
 // Unit stats
 max_hp = 100;
 current_hp = max_hp;
@@ -9,6 +12,7 @@ current_sp = max_sp;
 attack_power = 20;
 defense = 10;
 movement_range = 3; // Changed from 'speed' to avoid GameMaker's built-in movement
+move_type = MOVETYPE.GROUND; // Default movement type (will be set by unit factory)
 
 // Disable GameMaker's built-in movement system
 speed = 0;           // No automatic movement
@@ -37,6 +41,11 @@ team = 0; // 0 = player, 1 = enemy
 has_moved = false;
 has_acted = false;
 is_selected = false;
+
+// Original position for movement reversal
+original_grid_x = -1; // Position before movement this turn
+original_grid_y = -1; // Position before movement this turn
+can_reverse_movement = false; // Whether movement can be reversed
 
 // Visual settings
 sprite_index = choose(spr_berserker_idle, spr_mage_idle, spr_darkknight_idle, spr_grappler_idle, spr_archer_idle);

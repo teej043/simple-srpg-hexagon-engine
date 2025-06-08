@@ -5,6 +5,10 @@
 draw_set_font(-1);
 draw_set_color(c_white);
 
+// Get camera view dimensions for proper positioning
+var cam_w = camera_get_view_width(view_camera[0]);
+var cam_h = camera_get_view_height(view_camera[0]);
+
 // Check if game is over
 if (game_state != "playing") {
     // Draw game over screen
@@ -14,25 +18,25 @@ if (game_state != "playing") {
     // Semi-transparent background
     draw_set_color(c_black);
     draw_set_alpha(0.7);
-    draw_rectangle(0, 0, room_width, room_height, false);
+    draw_rectangle(0, 0, cam_w, cam_h, false);
     
     // Game over text
     draw_set_alpha(1);
     if (game_state == "player_wins") {
         draw_set_color(c_lime);
-        draw_text_transformed(room_width/2, room_height/2 - 50, "VICTORY!", 3, 3, 0);
+        draw_text_transformed(cam_w/2, cam_h/2 - 50, "VICTORY!", 3, 3, 0);
         draw_set_color(c_white);
-        draw_text(room_width/2, room_height/2, "Player Wins!");
+        draw_text(cam_w/2, cam_h/2, "Player Wins!");
     } else if (game_state == "enemy_wins") {
         draw_set_color(c_red);
-        draw_text_transformed(room_width/2, room_height/2 - 50, "DEFEAT!", 3, 3, 0);
+        draw_text_transformed(cam_w/2, cam_h/2 - 50, "DEFEAT!", 3, 3, 0);
         draw_set_color(c_white);
-        draw_text(room_width/2, room_height/2, "Enemy Wins!");
+        draw_text(cam_w/2, cam_h/2, "Enemy Wins!");
     }
     
     draw_set_color(c_yellow);
-    draw_text(room_width/2, room_height/2 + 50, "Press R to restart");
-    draw_text(room_width/2, room_height/2 + 70, "Press ESC to quit");
+    draw_text(cam_w/2, cam_h/2 + 50, "Press R to restart");
+    draw_text(cam_w/2, cam_h/2 + 70, "Press ESC to quit");
     
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
@@ -92,14 +96,86 @@ if (selected_unit != noone) {
     
     draw_set_color(c_white);
     if (!unit.has_moved || !unit.has_acted) {
-        draw_text(10, y_pos, "Right-click to Wait");
+        draw_text(10, y_pos, "Press A for Actions");
+    }
+    
+    // Add movement reversal instruction if available
+    if (unit.can_reverse_movement && unit.has_moved && !unit.has_acted) {
+        draw_set_color(c_yellow);
+        draw_text(10, y_pos + 20, "ESC/Right-click: Reverse movement");
+        draw_set_color(c_white);
     }
 }
 
-// Instructions
+// Instructions (positioned at bottom of view)
 draw_set_color(c_yellow);
-draw_text(10, room_height - 80, "Controls:");
-draw_text(10, room_height - 60, "Left-click: Select/Move/Attack");
-draw_text(10, room_height - 40, "Right-click: Wait (end unit turn)");
-draw_text(10, room_height - 20, "Blue=Move, Red=Attack, Green=Selected");
+draw_text(10, cam_h - 140, "Controls:");
+draw_text(10, cam_h - 120, "Left-click: Select/Move/Attack");
+draw_text(10, cam_h - 100, "Right-click: Reverse movement (if available)");
+draw_text(10, cam_h - 80, "A: Open Action Panel");
+draw_text(10, cam_h - 60, "Tab: Cycle through available units");
+draw_text(10, cam_h - 40, "Arrow Keys: Move cursor");
+draw_text(10, cam_h - 20, "Enter/Space: Select/Act with cursor");
+draw_text(200, cam_h - 20, "Esc: Exit cursor mode");
 draw_set_color(c_white);
+
+// Draw Action Panel
+if (action_panel_open) {
+    var panel_width = 120;
+    var panel_height = array_length(action_panel_actions) * 25 + 20;
+    
+    // Convert world coordinates to screen coordinates
+    var cam_x = camera_get_view_x(view_camera[0]);
+    var cam_y = camera_get_view_y(view_camera[0]);
+    var screen_x = action_panel_x - cam_x;
+    var screen_y = action_panel_y - cam_y;
+    
+    // Clamp panel to screen bounds
+    screen_x = clamp(screen_x, 10, cam_w - panel_width - 10);
+    screen_y = clamp(screen_y, 10, cam_h - panel_height - 10);
+    
+    // Draw panel background
+    draw_set_color(c_black);
+    draw_set_alpha(0.8);
+    draw_rectangle(screen_x, screen_y, screen_x + panel_width, screen_y + panel_height, false);
+    
+    // Draw panel border
+    draw_set_alpha(1);
+    draw_set_color(c_white);
+    draw_rectangle(screen_x, screen_y, screen_x + panel_width, screen_y + panel_height, true);
+    
+    // Draw title
+    draw_set_halign(fa_center);
+    draw_text(screen_x + panel_width/2, screen_y + 5, "Actions");
+    draw_set_halign(fa_left);
+    
+    // Draw action options
+    for (var i = 0; i < array_length(action_panel_actions); i++) {
+        var option_y = screen_y + 25 + (i * 25);
+        var action_name = action_panel_actions[i];
+        
+        // Highlight selected option
+        if (i == action_panel_selected_index) {
+            draw_set_color(c_yellow);
+            draw_rectangle(screen_x + 5, option_y - 2, screen_x + panel_width - 5, option_y + 18, false);
+            draw_set_color(c_black);
+        } else {
+            draw_set_color(c_white);
+        }
+        
+        // Draw action name with availability indicator
+        var display_text = action_name;
+        if (action_name == "Spell" || action_name == "Skill") {
+            display_text += " (N/A)";
+            // Gray out unavailable options
+            if (i != action_panel_selected_index) {
+                draw_set_color(c_gray);
+            }
+        }
+        
+        draw_text(screen_x + 10, option_y, display_text);
+    }
+    
+    // Reset color
+    draw_set_color(c_white);
+}

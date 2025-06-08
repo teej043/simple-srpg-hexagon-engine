@@ -1,26 +1,40 @@
-/// @description Insert description here
-// You can write your code in this editor
+/// @description Sprite-based hex grid rendering
+draw_clear(#4E9943);
 
-// Draw hexagonal grid
+// Draw terrain hexes first (base layer)
 for (var q = 0; q < grid_width; q++) {
     for (var r = 0; r < grid_height; r++) {
         var pos = hex_to_pixel(q, r);
-        var x_pos = pos[0];
-        var y_pos = pos[1];
+        var terrain_type = get_terrain_at(q, r);
+        var terrain_sprite = get_terrain_sprite(terrain_type);
         
-        // Set color based on highlight
-        switch (highlight_grid[q][r]) {
-            case 0: draw_set_color(c_gray); break;      // Normal
-            case 1: draw_set_color(c_blue); break;      // Movement
-            case 2: draw_set_color(c_red); break;       // Attack
-            case 3: draw_set_color(c_green); break;     // Selected
+        // Draw terrain sprite
+        draw_sprite(terrain_sprite, 0, pos[0], pos[1]);
+    }
+}
+
+// Draw highlight overlays using spr_hex with colors and alpha
+for (var q = 0; q < grid_width; q++) {
+    for (var r = 0; r < grid_height; r++) {
+        var highlight_type = highlight_grid[q][r];
+        
+        // Only draw highlights for non-zero values
+        if (highlight_type > 0) {
+            var pos = hex_to_pixel(q, r);
+            var highlight_color = c_white;
+            var highlight_alpha = 0.6;
+            
+            // Set color based on highlight type
+            switch (highlight_type) {
+                case 1: highlight_color = c_blue; break;    // Movement
+                case 2: highlight_color = c_red; break;     // Attack
+                case 3: highlight_color = c_green; break;   // Selected
+                case 4: highlight_color = c_yellow; break;  // Keyboard cursor
+                default: highlight_color = c_white; break;
+            }
+            
+            // Draw colored highlight overlay
+            draw_sprite_ext(spr_hex, 0, pos[0], pos[1], 1, 1, 0, highlight_color, highlight_alpha);
         }
-        
-        draw_set_alpha(0.3);
-        draw_hexagon(x_pos, y_pos, hex_size, true);
-        
-        draw_set_color(c_white);
-        draw_set_alpha(1);
-        draw_hexagon(x_pos, y_pos, hex_size, false);
     }
 }

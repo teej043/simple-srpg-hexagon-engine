@@ -14,33 +14,66 @@ function scr_ai_move_towards(unit, target){
 	with (obj_grid_manager) {
 	    for (var q = 0; q < grid_width; q++) {
 	        for (var r = 0; r < grid_height; r++) {
-	            if (movement_grid[q][r] >= 0 && get_unit_at(q, r) == noone) {
-	                // Check if we can attack the target from this position
-	                var would_enable_attack = false;
-	                var directions = get_hex_directions(r);
+	            if (movement_grid[q][r] >= 0) {
+	                var unit_at_position = get_unit_at(q, r);
+	                var can_use_position = false;
 	                
-	                for (var i = 0; i < array_length(directions); i++) {
-	                    var attack_q = q + directions[i][0];
-	                    var attack_r = r + directions[i][1];
-	                    
-	                    if (target.grid_x == attack_q && target.grid_y == attack_r) {
-	                        would_enable_attack = true;
-	                        break;
+	                // Check if unit can use this position based on movement type
+	                if (unit_at_position == noone) {
+	                    // No unit at position - always usable
+	                    can_use_position = true;
+	                } else {
+	                    // Unit at position - check movement type
+	                    switch(unit.move_type) {
+	                        case MOVETYPE.GROUND:
+	                            // Ground units blocked by all other units
+	                            can_use_position = false;
+	                            break;
+	                            
+	                        case MOVETYPE.SKYLOW:
+	                            // Sky low units blocked by all other units (cannot land on them)
+	                            can_use_position = false;
+	                            break;
+	                            
+	                        case MOVETYPE.SKYHIGH:
+	                            // Sky high units cannot land on other units
+	                            can_use_position = false;
+	                            break;
+	                            
+	                        default:
+	                            can_use_position = false;
+	                            break;
 	                    }
 	                }
 	                
-	                var distance = scr_hex_distance(q, r, target.grid_x, target.grid_y);
-	                
-	                // Prioritize positions that enable attack
-	                if (would_enable_attack && (!can_attack_after_move || distance < best_distance)) {
-	                    best_distance = distance;
-	                    best_pos = [q, r];
-	                    can_attack_after_move = true;
-	                }
-	                // If we haven't found an attack position, move closer
-	                else if (!can_attack_after_move && distance < best_distance) {
-	                    best_distance = distance;
-	                    best_pos = [q, r];
+	                if (can_use_position) {
+	                    // Check if we can attack the target from this position
+	                    var would_enable_attack = false;
+	                    var directions = get_hex_directions(r);
+	                    
+	                    for (var i = 0; i < array_length(directions); i++) {
+	                        var attack_q = q + directions[i][0];
+	                        var attack_r = r + directions[i][1];
+	                        
+	                        if (target.grid_x == attack_q && target.grid_y == attack_r) {
+	                            would_enable_attack = true;
+	                            break;
+	                        }
+	                    }
+	                    
+	                    var distance = scr_hex_distance(q, r, target.grid_x, target.grid_y);
+	                    
+	                    // Prioritize positions that enable attack
+	                    if (would_enable_attack && (!can_attack_after_move || distance < best_distance)) {
+	                        best_distance = distance;
+	                        best_pos = [q, r];
+	                        can_attack_after_move = true;
+	                    }
+	                    // If we haven't found an attack position, move closer
+	                    else if (!can_attack_after_move && distance < best_distance) {
+	                        best_distance = distance;
+	                        best_pos = [q, r];
+	                    }
 	                }
 	            }
 	        }
@@ -64,13 +97,18 @@ function scr_ai_move_towards(unit, target){
 	    while (current_q != unit.grid_x || current_r != unit.grid_y) {
 	        iterations++;
 	        if (iterations > max_iterations) {
-	            show_debug_message("AI pathfinding exceeded maximum iterations!");
+	            if (DEBUG) {
+	                show_debug_message("AI pathfinding exceeded maximum iterations!");
+	            }
 	            ds_list_clear(unit.movement_path);
 	            return;
 	        }
 	        
 	        var found_next = false;
 	        var current_value = obj_grid_manager.movement_grid[current_q][current_r];
+	        var best_neighbor_cost = 999;
+	        var best_neighbor_q = -1;
+	        var best_neighbor_r = -1;
 	        
 	        with (obj_grid_manager) {
 	            var directions = get_hex_directions(current_r);
@@ -79,22 +117,30 @@ function scr_ai_move_towards(unit, target){
 	                var check_r = current_r + directions[i][1];
 	                
 	                if (is_valid_position(check_q, check_r)) {
-	                    // Look for a neighbor with exactly one less movement point
-	                    if (movement_grid[check_q][check_r] == current_value - 1) {
-	                        current_q = check_q;
-	                        current_r = check_r;
-	                        ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
+	                    var neighbor_cost = movement_grid[check_q][check_r];
+	                    // Look for the neighbor with the lowest cost that's less than current
+	                    if (neighbor_cost >= 0 && neighbor_cost < current_value && neighbor_cost < best_neighbor_cost) {
+	                        best_neighbor_cost = neighbor_cost;
+	                        best_neighbor_q = check_q;
+	                        best_neighbor_r = check_r;
 	                        found_next = true;
-	                        break;
 	                    }
 	                }
 	            }
 	        }
 	        
+	        if (found_next) {
+	            current_q = best_neighbor_q;
+	            current_r = best_neighbor_r;
+	            ds_list_insert(unit.movement_path, 0, [current_q, current_r]);
+	        }
+        
 	        // If we can't find the next step, something went wrong
 	        if (!found_next) {
-	            show_debug_message("AI path finding failed! Current value: " + string(current_value));
-	            show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
+	            if (DEBUG) {
+	                show_debug_message("AI path finding failed! Current value: " + string(current_value));
+	                show_debug_message("Current position: " + string(current_q) + "," + string(current_r));
+	            }
 	            ds_list_clear(unit.movement_path);
 	            return;
 	        }
@@ -110,15 +156,19 @@ function scr_ai_move_towards(unit, target){
 	    // Reset animation flags
 	    unit.skip_animation = false;
 	    
-	    show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
-	                      " (Can attack after move: " + string(can_attack_after_move) + ")");
-	                      
 	    // Skip animation after a short delay
 	    with (obj_game_manager) {
 	        alarm[1] = 30; // Set a timer to skip animation after 0.5 seconds
 	    }
+	    
+	    if (DEBUG) {
+	        show_debug_message("AI unit moving to " + string(best_pos[0]) + "," + string(best_pos[1]) + 
+	                          " (Can attack after move: " + string(can_attack_after_move) + ")");
+	    }
 	} else {
-	    show_debug_message("AI unit couldn't find better position than current");
+	    if (DEBUG) {
+	        show_debug_message("AI unit couldn't find better position than current");
+	    }
 	}
 
 	scr_clear_highlights();
