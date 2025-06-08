@@ -7,31 +7,39 @@ function execute_attack(attacker, defender){
 	
 	var distance = scr_hex_distance(attacker.grid_x, attacker.grid_y, defender.grid_x, defender.grid_y);
 	
-	show_debug_message("\n=== COMBAT START ===");
-	show_debug_message("[COMBAT] " + attacker.unit_type + " at [" + string(attacker.grid_x) + "," + string(attacker.grid_y) + 
-					  "] (ATK:" + string(attacker.attack_power) + ", Range:" + string(attacker.attack_range) + 
-					  ") attacking " + defender.unit_type + " at [" + string(defender.grid_x) + "," + string(defender.grid_y) + 
-					  "] (DEF:" + string(defender.defense) + ", HP:" + string(defender.current_hp) + ")");
-	show_debug_message("[COMBAT] Distance between units: " + string(distance));
+	if (DEBUG) {
+		show_debug_message("\n=== COMBAT START ===");
+		show_debug_message("[COMBAT] " + attacker.unit_type + " at [" + string(attacker.grid_x) + "," + string(attacker.grid_y) + 
+						  "] (ATK:" + string(attacker.attack_power) + ", Range:" + string(attacker.attack_range) + 
+						  ") attacking " + defender.unit_type + " at [" + string(defender.grid_x) + "," + string(defender.grid_y) + 
+						  "] (DEF:" + string(defender.defense) + ", HP:" + string(defender.current_hp) + ")");
+		show_debug_message("[COMBAT] Distance between units: " + string(distance));
+	}
 	
 	// Use the same flood fill algorithm as attack range visualization
 	if (!is_target_in_attack_range(attacker, defender.grid_x, defender.grid_y)) {
-		show_debug_message("[COMBAT ERROR] Target is beyond attack range! Distance: " + string(distance) + 
-						  ", Attack range: " + string(attacker.attack_range));
+		if (DEBUG) {
+			show_debug_message("[COMBAT ERROR] Target is beyond attack range! Distance: " + string(distance) + 
+							  ", Attack range: " + string(attacker.attack_range));
+		}
 		return;
 	}
 	
 	var damage = max(1, attacker.attack_power - defender.defense);
 	defender.current_hp -= damage;
 	
-	show_debug_message("[COMBAT] Damage dealt: " + string(damage) + " (ATK " + string(attacker.attack_power) + 
-					  " - DEF " + string(defender.defense) + ")");
-	show_debug_message("[COMBAT] " + defender.unit_type + " HP: " + string(defender.current_hp + damage) + 
-					  " -> " + string(defender.current_hp));
+	if (DEBUG) {
+		show_debug_message("[COMBAT] Damage dealt: " + string(damage) + " (ATK " + string(attacker.attack_power) + 
+						  " - DEF " + string(defender.defense) + ")");
+		show_debug_message("[COMBAT] " + defender.unit_type + " HP: " + string(defender.current_hp + damage) + 
+						  " -> " + string(defender.current_hp));
+	}
 
 	// Check if defender is defeated
 	if (defender.current_hp <= 0) {
-		show_debug_message("[COMBAT] " + defender.unit_type + " was defeated!");
+		if (DEBUG) {
+			show_debug_message("[COMBAT] " + defender.unit_type + " was defeated!");
+		}
 		
 		with (obj_game_manager) {
 			// Remove from appropriate team list
@@ -39,7 +47,9 @@ function execute_attack(attacker, defender){
 				for (var i = 0; i < array_length(player_units); i++) {
 					if (player_units[i] == defender) {
 						array_delete(player_units, i, 1);
-						show_debug_message("[COMBAT] Removed unit from player team");
+						if (DEBUG) {
+							show_debug_message("[COMBAT] Removed unit from player team");
+						}
 						break;
 					}
 				}
@@ -47,7 +57,9 @@ function execute_attack(attacker, defender){
 				for (var i = 0; i < array_length(enemy_units); i++) {
 					if (enemy_units[i] == defender) {
 						array_delete(enemy_units, i, 1);
-						show_debug_message("[COMBAT] Removed unit from enemy team");
+						if (DEBUG) {
+							show_debug_message("[COMBAT] Removed unit from enemy team");
+						}
 						break;
 					}
 				}
@@ -59,5 +71,7 @@ function execute_attack(attacker, defender){
 	}
 
 	attacker.has_acted = true;
-	show_debug_message("=== COMBAT END ===\n");
+	if (DEBUG) {
+		show_debug_message("=== COMBAT END ===\n");
+	}
 }

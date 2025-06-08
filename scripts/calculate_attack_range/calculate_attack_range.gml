@@ -63,5 +63,7 @@ function calculate_attack_range(unit){
 		// Cleanup
 		ds_queue_destroy(queue);
 	}
+	
+	// No longer need surface update tracking for sprite-based rendering
 }
 

@@ -1,6 +1,14 @@
 /// @description Unit data management and templates
 
 // Unit template data stored in JSON format
+
+enum MOVETYPE
+{
+    GROUND,
+	SKYLOW,
+	SKYHIGH
+}
+
 function get_unit_templates() {
     static unit_templates = {
         "berserker": {
@@ -14,6 +22,7 @@ function get_unit_templates() {
                 "movement_range": 3,
 				"attack_range": 1
             },
+			"move_type" : MOVETYPE.GROUND,
             "ability_ids": ["rage", "whirlwind"],
             "passive_trait_ids": ["berserk", "momentum"]
         },
@@ -28,6 +37,7 @@ function get_unit_templates() {
                 "movement_range": 2,
 				"attack_range": 2
             },
+			"move_type" : MOVETYPE.GROUND,
             "ability_ids": ["fireball"],
             "passive_trait_ids": ["mana_shield", "spell_weaver"]
         },
@@ -42,6 +52,7 @@ function get_unit_templates() {
                 "movement_range": 3,
 				"attack_range": 1
             },
+			"move_type" : MOVETYPE.GROUND,
             "ability_ids": ["dark_slash"],
             "passive_trait_ids": ["battle_hardened"]
         },
@@ -56,6 +67,7 @@ function get_unit_templates() {
                 "movement_range": 4,
 				"attack_range": 1
             },
+			"move_type" : MOVETYPE.GROUND,
             "ability_ids": ["throw"],
             "passive_trait_ids": ["momentum", "battle_hardened"]
         },
@@ -70,6 +82,67 @@ function get_unit_templates() {
                 "movement_range": 3,
 				"attack_range": 3
             },
+			"move_type" : MOVETYPE.SKYLOW,
+            "ability_ids": ["power_shot"],
+            "passive_trait_ids": ["long_range"]
+        },
+        "archer": {
+            "name": "Archer",
+            "sprite": spr_archer_idle,
+            "stats": {
+                "max_hp": 90,
+                "max_sp": 50,
+                "attack_power": 18,
+                "defense": 7,
+                "movement_range": 3,
+				"attack_range": 3
+            },
+			"move_type" : MOVETYPE.SKYLOW,
+            "ability_ids": ["power_shot"],
+            "passive_trait_ids": ["long_range"]
+        },
+        "galura": {
+            "name": "Galura",
+            "sprite": spr_angel_idle,
+            "stats": {
+                "max_hp": 90,
+                "max_sp": 50,
+                "attack_power": 18,
+                "defense": 7,
+                "movement_range": 3,
+				"attack_range": 3
+            },
+			"move_type" : MOVETYPE.SKYLOW,
+            "ability_ids": ["power_shot"],
+            "passive_trait_ids": ["long_range"]
+        },
+        "angel": {
+            "name": "Angel",
+            "sprite": spr_angel_idle,
+            "stats": {
+                "max_hp": 90,
+                "max_sp": 50,
+                "attack_power": 18,
+                "defense": 7,
+                "movement_range": 4,
+				"attack_range": 1
+            },
+			"move_type" : MOVETYPE.SKYHIGH,
+            "ability_ids": ["power_shot"],
+            "passive_trait_ids": ["long_range"]
+        },
+        "demon": {
+            "name": "Demon",
+            "sprite": spr_demon_idle,
+            "stats": {
+                "max_hp": 90,
+                "max_sp": 50,
+                "attack_power": 18,
+                "defense": 7,
+                "movement_range": 5,
+				"attack_range": 1
+            },
+			"move_type" : MOVETYPE.SKYLOW,
             "ability_ids": ["power_shot"],
             "passive_trait_ids": ["long_range"]
         }

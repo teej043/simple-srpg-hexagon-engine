@@ -45,6 +45,8 @@ function get_hex_positions_at_range(center_q, center_r, range){
         }
     }
     
-    show_debug_message("[RANGE] Found " + string(array_length(positions)) + " positions at range " + string(range));
+    if (DEBUG) {
+        show_debug_message("[RANGE] Found " + string(array_length(positions)) + " positions at range " + string(range));
+    }
     return positions;
 } 

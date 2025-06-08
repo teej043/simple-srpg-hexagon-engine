@@ -20,29 +20,39 @@ if (ai_pending_unit != noone && ai_pending_target != noone) {
         var unit = ai_pending_unit;
         var target = ai_pending_target;
         
-        show_debug_message("\n=== AI POST-MOVEMENT CHECK ===");
-        show_debug_message("[AI] " + unit.unit_type + " checking for attack after moving");
+        if (DEBUG) {
+            show_debug_message("\n=== AI POST-MOVEMENT CHECK ===");
+            show_debug_message("[AI] " + unit.unit_type + " checking for attack after moving");
+        }
         
         // Use the same flood fill algorithm as attack range visualization
         var can_attack = is_target_in_attack_range(unit, target.grid_x, target.grid_y);
         
         if (can_attack) {
-            show_debug_message("[AI] Target is within attack range!");
+            if (DEBUG) {
+                show_debug_message("[AI] Target is within attack range!");
+            }
         }
         
         // If we can attack after moving, do it
         if (can_attack && !unit.has_acted) {
-            show_debug_message("[AI] Executing post-movement attack");
+            if (DEBUG) {
+                show_debug_message("[AI] Executing post-movement attack");
+            }
             execute_attack(unit, target);
             unit.has_acted = true;
             scr_unit_deselect(unit);
         } else {
             // If we can't attack, just end the unit's turn
-            show_debug_message("[AI] Cannot attack after movement, ending turn");
+            if (DEBUG) {
+                show_debug_message("[AI] Cannot attack after movement, ending turn");
+            }
             scr_unit_wait(unit);
         }
         
-        show_debug_message("=== AI POST-MOVEMENT CHECK END ===\n");
+        if (DEBUG) {
+            show_debug_message("=== AI POST-MOVEMENT CHECK END ===\n");
+        }
         
         // Clear pending unit and target
         ai_pending_unit = noone;

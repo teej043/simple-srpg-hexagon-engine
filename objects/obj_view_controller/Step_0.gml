@@ -42,7 +42,9 @@ if (!is_panning && instance_exists(obj_game_manager)) {
     
     // Check for team change
     if (last_team != gm.current_team) {
-        show_debug_message("Team changed from " + string(last_team) + " to " + string(gm.current_team));
+        if (DEBUG) {
+            show_debug_message("Team changed from " + string(last_team) + " to " + string(gm.current_team));
+        }
         last_team = gm.current_team;
         follow_target = noone; // Reset following when team changes
         
@@ -57,14 +59,18 @@ if (!is_panning && instance_exists(obj_game_manager)) {
                         clamp(unit.y - cam_height/2, cam_bounds_y_min, cam_bounds_y_max)
                     );
                     set_camera_target(unit);
-                    show_debug_message("Centered on enemy unit at: " + string(unit.x) + "," + string(unit.y));
+                    if (DEBUG) {
+                        show_debug_message("Centered on enemy unit at: " + string(unit.x) + "," + string(unit.y));
+                    }
                     break;
                 }
             }
         } else {
             // If switching to player turn, center on all player units
             var player_count = array_length(gm.player_units);
-            show_debug_message("Player turn start. Player units: " + string(player_count));
+            if (DEBUG) {
+                show_debug_message("Player turn start. Player units: " + string(player_count));
+            }
             
             if (player_count > 0) {
                 // Calculate average position of all player units
@@ -86,7 +92,9 @@ if (!is_panning && instance_exists(obj_game_manager)) {
                         max_x = max(max_x, unit.x);
                         max_y = max(max_y, unit.y);
                         valid_units++;
-                        show_debug_message("Player unit " + string(i) + " at: " + string(unit.x) + "," + string(unit.y));
+                        if (DEBUG) {
+                            show_debug_message("Player unit " + string(i) + " at: " + string(unit.x) + "," + string(unit.y));
+                        }
                     }
                 }
                 
@@ -98,16 +106,22 @@ if (!is_panning && instance_exists(obj_game_manager)) {
                     var spread_x = max_x - min_x;
                     var spread_y = max_y - min_y;
                     
-                    show_debug_message("Unit spread: " + string(spread_x) + "x" + string(spread_y));
-                    show_debug_message("View size: " + string(cam_width) + "x" + string(cam_height));
+                    if (DEBUG) {
+                        show_debug_message("Unit spread: " + string(spread_x) + "x" + string(spread_y));
+                        show_debug_message("View size: " + string(cam_width) + "x" + string(cam_height));
+                    }
                     
                     if (spread_x > cam_width * 0.8 || spread_y > cam_height * 0.8) {
                         // Units are spread out, center on the middle of their spread
                         avg_x = min_x + spread_x/2;
                         avg_y = min_y + spread_y/2;
-                        show_debug_message("Units spread out, centering on middle: " + string(avg_x) + "," + string(avg_y));
+                        if (DEBUG) {
+                            show_debug_message("Units spread out, centering on middle: " + string(avg_x) + "," + string(avg_y));
+                        }
                     } else {
-                        show_debug_message("Units clustered, centering on average: " + string(avg_x) + "," + string(avg_y));
+                        if (DEBUG) {
+                            show_debug_message("Units clustered, centering on average: " + string(avg_x) + "," + string(avg_y));
+                        }
                     }
                     
                     // Instantly center camera on calculated position
@@ -118,7 +132,9 @@ if (!is_panning && instance_exists(obj_game_manager)) {
                     target_x = new_cam_x;
                     target_y = new_cam_y;
                     
-                    show_debug_message("Camera positioned at: " + string(new_cam_x) + "," + string(new_cam_y));
+                    if (DEBUG) {
+                        show_debug_message("Camera positioned at: " + string(new_cam_x) + "," + string(new_cam_y));
+                    }
                 }
             }
         }
@@ -150,7 +166,9 @@ if (follow_target != noone && instance_exists(follow_target)) {
     
     // Only stop following if the unit has completed ALL actions AND is not moving
     if (follow_target.has_moved && follow_target.has_acted && !follow_target.is_moving) {
-        show_debug_message("[CAMERA] Stopped following " + follow_target.unit_type + " - actions completed");
+        if (DEBUG) {
+            show_debug_message("[CAMERA] Stopped following " + follow_target.unit_type + " - actions completed");
+        }
         follow_target = noone;
     }
 }
@@ -158,6 +176,10 @@ if (follow_target != noone && instance_exists(follow_target)) {
 // Smoothly move camera to target position
 var new_x = lerp(current_x, target_x, lerp_speed);
 var new_y = lerp(current_y, target_y, lerp_speed);
+
+// Round camera position to prevent sub-pixel positioning that causes HTML5 artifacts
+new_x = round(new_x);
+new_y = round(new_y);
 
 // Update camera position
 camera_set_view_pos(view_camera[0], new_x, new_y);
